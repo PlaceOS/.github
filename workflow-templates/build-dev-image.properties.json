@@ -1,0 +1,8 @@
+{
+  "name": "Build dev image",
+  "description": "Build and publish to the GitHub Container Registry",
+  "iconName": "build-dev-image",
+  "filePatterns": [
+    "^Dockerfile"
+  ]
+}
