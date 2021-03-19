@@ -15,6 +15,7 @@ runs:
     -
       name: Extract names
       id: name
+      shell: bash
       run: |
         echo ::set-output name=image::$(echo ${GITHUB_REPOSITORY,,})
         echo ::set-output name=tag::$(echo ${GITHUB_REF#refs/heads/} | sed 's/[^[:alnum:]\.\_\-]/-/g')
