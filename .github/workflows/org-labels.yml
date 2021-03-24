@@ -3,7 +3,8 @@ name: Org Labels
 on:
   push:
     paths:
-      - 'labels.json'
+      - .github/workflows/org-labels.yml
+      - labels.json
   workflow_dispatch:
 
 jobs:
@@ -17,38 +18,47 @@ jobs:
             // Labels to apply
             const labels = require(`${process.env.GITHUB_WORKSPACE}/labels.json`);
 
-            // Gets current labels as a Map keyed on name.
-            const currentLabels = async repo => {
-              const response = await github.issues.listLabelsForRepo(repo)
-              return new Map(response.data.map(label => [label.name, label]));
-            };
+            // Gets current labels available on repo
+            const currentLabels = repo =>
+              github.paginate(
+                github.issues.listLabelsForRepo,
+                repo,
+                response => response.data.map(label => ({
+                  name: label.name,
+                  color: label.color,
+                  description: label.description
+                }))
+              );
 
             // Syncs the config above with the target {owner, repo}
             const syncLabels = async repo => {
-              const existing = await currentLabels(repo);
+              const existing = new Map();
+              (await currentLabels(repo)).forEach(label => existing.set(label.name, label));
 
-              core.startGroup(repo.repo);
-
-              await Promise.all(labels.map(label => {
-                let current = existing.get(label.name);
-                existing.delete(label.name);
-                if (current == undefined) {
-                  core.info(`Adding ${label.name}`);
-                  return github.issues.createLabel({...repo, ...label});
-                } else if (current.color == label.color && current.description == label.description) {
-                  core.info(`Skipping ${label.name}`);
-                } else {
-                  core.info(`Updating ${label.name}`);
-                  return github.issues.updateLabel({...repo, ...label});
+              const updates = labels.map(async label => {
+                try {
+                  let current = existing.get(label.name);
+                  existing.delete(label.name);
+                  if (current == undefined) {
+                    core.info(`Creating ${label.name}`);
+                    return await github.issues.createLabel({...repo, ...label});
+                  } else if (current.color == label.color && current.description == label.description) {
+                    core.info(`Skipping ${label.name}`);
+                  } else {
+                    core.info(`Updating ${label.name}`);
+                    return await github.issues.updateLabel({...repo, ...label});
+                  }
+                } catch (err) {
+                  core.error(`Error applying ${label.name}: ${err}`);
                 }
-              }));
+              });
 
               if (existing.size > 0) {
                 const orphaned = Array.from(existing.keys());
                 core.warning(`Additional labels exist on ${repo.repo}: ${orphaned.join(', ')}`);
               }
 
-              core.endGroup();
+              return Promise.all(updates);
             };
 
             // Apply to config to all repos in the current org
@@ -56,10 +66,10 @@ jobs:
               github.repos.listForOrg,
               { org: context.repo.owner }
             )) {
-              response.data.forEach(repo =>
-                syncLabels({
+              for (const repo of response.data) {
+                await core.group(repo.name, () => syncLabels({
                   owner: repo.owner.login,
                   repo: repo.name
-                })
-              );
+                }).catch(core.error));
+              };
             };
