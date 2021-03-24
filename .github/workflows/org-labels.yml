@@ -50,6 +50,7 @@ jobs:
                   }
                 } catch (err) {
                   core.error(`Error applying ${label.name}: ${err}`);
+                  throw err;
                 }
               });
 
@@ -70,6 +71,6 @@ jobs:
                 await core.group(repo.name, () => syncLabels({
                   owner: repo.owner.login,
                   repo: repo.name
-                }).catch(core.error));
+                }).catch(core.setFailed));
               };
             };
