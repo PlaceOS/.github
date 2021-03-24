@@ -33,13 +33,16 @@ jobs:
 
             // Syncs the config above with the target {owner, repo}
             const syncLabels = async repo => {
+              const key = label => label.name.toLowerCase();
+
               const existing = new Map();
-              (await currentLabels(repo)).forEach(label => existing.set(label.name, label));
+              (await currentLabels(repo)).forEach(label => existing.set(key(label), label));
 
               const updates = labels.map(async label => {
                 try {
-                  let current = existing.get(label.name);
-                  existing.delete(label.name);
+                  let label_k = key(label);
+                  let current = existing.get(label_k);
+                  existing.delete(label_k);
                   if (current == undefined) {
                     core.info(`Creating ${label.name}`);
                     return await github.issues.createLabel({...repo, ...label});
