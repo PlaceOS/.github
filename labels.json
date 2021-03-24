@@ -1,0 +1,217 @@
+[
+  {
+    "name": "epic",
+    "description": null,
+    "color": "3e4b9e"
+  },
+  {
+    "name": "focus: analytics",
+    "description": "Focus on Analytics",
+    "color": "6dba0e"
+  },
+  {
+    "name": "focus: backend",
+    "description": "Focus on Back End Development",
+    "color": "c5def5"
+  },
+  {
+    "name": "focus: devops",
+    "description": "Focus on DevOps/Infra",
+    "color": "af570e"
+  },
+  {
+    "name": "focus: documentation",
+    "description": "Focus on Documentation",
+    "color": "0075ca"
+  },
+  {
+    "name": "focus: front end",
+    "description": "Focus on Front End Development",
+    "color": "e6ec48"
+  },
+  {
+    "name": "priority: critical",
+    "description": null,
+    "color": "d93f0b"
+  },
+  {
+    "name": "priority: high",
+    "description": null,
+    "color": "ff8c00"
+  },
+  {
+    "name": "priority: low",
+    "description": null,
+    "color": "0e8a16"
+  },
+  {
+    "name": "priority: medium",
+    "description": null,
+    "color": "fbca04"
+  },
+  {
+    "name": "product: placeos",
+    "description": "Issue relates to PlaceOS Product",
+    "color": "9156d8"
+  },
+  {
+    "name": "product: portal",
+    "description": "Issue relates to Client Portal Product",
+    "color": "e24da9"
+  },
+  {
+    "name": "squad: core",
+    "description": "PlaceOS Core Development",
+    "color": "4a253c"
+  },
+  {
+    "name": "squad: front end & ux",
+    "description": "Front End and UX Team",
+    "color": "afffb7"
+  },
+  {
+    "name": "squad: portal",
+    "description": "Client Portal Squad",
+    "color": "f602dd"
+  },
+  {
+    "name": "status: abandoned",
+    "description": null,
+    "color": "000000"
+  },
+  {
+    "name": "status: accepted",
+    "description": "Selected for Development",
+    "color": "0e8a16"
+  },
+  {
+    "name": "status: backlog",
+    "description": null,
+    "color": "f7c980"
+  },
+  {
+    "name": "status: blocked",
+    "description": null,
+    "color": "d93f0b"
+  },
+  {
+    "name": "status: completed",
+    "description": null,
+    "color": "1d76db"
+  },
+  {
+    "name": "status: duplicate",
+    "description": "This issue or pull request already exists",
+    "color": "000000"
+  },
+  {
+    "name": "status: help wanted",
+    "description": "This issue or pull request already exists",
+    "color": "008672"
+  },
+  {
+    "name": "status: in progress",
+    "description": null,
+    "color": "c0c0c0"
+  },
+  {
+    "name": "status: maintenance",
+    "description": null,
+    "color": "e4e669"
+  },
+  {
+    "name": "status: on hold",
+    "description": null,
+    "color": "d93f0b"
+  },
+  {
+    "name": "status: pending",
+    "description": null,
+    "color": "fef2c0"
+  },
+  {
+    "name": "status: qa",
+    "description": null,
+    "color": "c0c0c0"
+  },
+  {
+    "name": "status: rejected",
+    "description": null,
+    "color": "3d3e52"
+  },
+  {
+    "name": "status: requires srs",
+    "description": "Feature Request Pending SRS",
+    "color": "f9d0c4"
+  },
+  {
+    "name": "status: requires testing",
+    "description": "Requires Testing",
+    "color": "E99695"
+  },
+  {
+    "name": "status: stale",
+    "description": "issue identified to be stale",
+    "color": "44424c"
+  },
+  {
+    "name": "status: review needed",
+    "description": null,
+    "color": "f9d0c4"
+  },
+  {
+    "name": "status: wont fix",
+    "description": null,
+    "color": "ffffff"
+  },
+  {
+    "name": "type: bug",
+    "description": "something isn't working",
+    "color": "d93f0b"
+  },
+  {
+    "name": "type: documentation",
+    "description": "improvements or additions to documentation",
+    "color": "0075ca"
+  },
+  {
+    "name": "type: enhancement",
+    "description": "new feature or request",
+    "color": "a2eeef"
+  },
+  {
+    "name": "type: good first issue",
+    "description": "good for newcomers",
+    "color": "7057ff"
+  },
+  {
+    "name": "type: maintenance",
+    "description": "requires maintenance",
+    "color": "e4e669"
+  },
+  {
+    "name": "type: question",
+    "description": "further information is requested",
+    "color": "d876e3"
+  },
+  {
+    "name": "type: refactor",
+    "description": null,
+    "color": "afffb2"
+  },
+  {
+    "name": "type: roadmap",
+    "description": "roadmap item",
+    "color": "bfdadc"
+  },
+  {
+    "name": "type: wont fix",
+    "description": "this will not be worked on",
+    "color": "ffffff"
+  },
+    {
+    "name": "type: r&d",
+    "description": "Eligible for R&D",
+    "color": "AA4692"
+  }
+]

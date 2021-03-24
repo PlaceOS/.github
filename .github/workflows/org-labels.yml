@@ -1,0 +1,65 @@
+name: Org Labels
+
+on:
+  push:
+    paths:
+      - 'labels.json'
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/github-script@v3
+        with:
+          script: |
+            // Labels to apply
+            const labels = require(`${process.env.GITHUB_WORKSPACE}/labels.json`);
+
+            // Gets current labels as a Map keyed on name.
+            const currentLabels = async repo => {
+              const response = await github.issues.listLabelsForRepo(repo)
+              return new Map(response.data.map(label => [label.name, label]));
+            };
+
+            // Syncs the config above with the target {owner, repo}
+            const syncLabels = async repo => {
+              const existing = await currentLabels(repo);
+
+              core.startGroup(repo.repo);
+
+              await Promise.all(labels.map(label => {
+                let current = existing.get(label.name);
+                existing.delete(label.name);
+                if (current == undefined) {
+                  core.info(`Adding ${label.name}`);
+                  return github.issues.createLabel({...repo, ...label});
+                } else if (current.color == label.color && current.description == label.description) {
+                  core.info(`Skipping ${label.name}`);
+                } else {
+                  core.info(`Updating ${label.name}`);
+                  return github.issues.updateLabel({...repo, ...label});
+                }
+              }));
+
+              if (existing.size > 0) {
+                const orphaned = Array.from(existing.keys());
+                core.warning(`Additional labels exist on ${repo.repo}: ${orphaned.join(', ')}`);
+              }
+
+              core.endGroup();
+            };
+
+            // Apply to config to all repos in the current org
+            for await (const response of github.paginate.iterator(
+              github.repos.listForOrg,
+              { org: context.repo.owner }
+            )) {
+              response.data.forEach(repo =>
+                syncLabels({
+                  owner: repo.owner.login,
+                  repo: repo.name
+                })
+              );
+            };
