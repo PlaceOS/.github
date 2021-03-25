@@ -214,7 +214,7 @@
     "description": "Eligible for R&D",
     "color": "AA4692"
   },
-      {
+  {
     "name": "type: security",
     "description": "Issue related to Security",
     "color": "3E83FC"
