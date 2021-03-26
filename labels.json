@@ -218,5 +218,15 @@
     "name": "type: security",
     "description": "Issue related to Security",
     "color": "3E83FC"
+  },
+  {
+    "name": "type: chore",
+    "description": null,
+    "color": "006b75"
+  },
+  {
+    "name": "rfc: discussion",
+    "description": "Issue that can be resolved with discussion",
+    "color": "4F67B5"
   }
 ]
