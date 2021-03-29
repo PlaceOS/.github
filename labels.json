@@ -226,7 +226,12 @@
   },
   {
     "name": "type: rfc",
-    "description": "Issue that can be resolved with discussion",
+    "description": "RFC",
     "color": "4F67B5"
+  },
+  {
+    "name": "type: discussion",
+    "description": "Issue that can be resolved with discussion",
+    "color": "19B1E4"
   }
 ]
