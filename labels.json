@@ -225,7 +225,7 @@
     "color": "006b75"
   },
   {
-    "name": "rfc: discussion",
+    "name": "type: rfc",
     "description": "Issue that can be resolved with discussion",
     "color": "4F67B5"
   }
