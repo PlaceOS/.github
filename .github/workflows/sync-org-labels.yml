@@ -1,4 +1,8 @@
-name: Org Labels
+# Applies the contents of `labels.json` to all repositories in the current org.
+#
+# Actions are additive only. Existing labels not defined in the json spec will
+# be noted as warnings.
+name: Sync Org Labels
 
 on:
   push:
