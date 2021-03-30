@@ -218,5 +218,20 @@
     "name": "type: security",
     "description": "Issue related to Security",
     "color": "3E83FC"
+  },
+  {
+    "name": "type: chore",
+    "description": "Tooling; no production code change or library break fix",
+    "color": "006b75"
+  },
+  {
+    "name": "type: adr",
+    "description": "Issue raised or related to an Achitectural Decision Record",
+    "color": "4F67B5"
+  },
+  {
+    "name": "type: discussion",
+    "description": "Issue that can be resolved with discussion",
+    "color": "19B1E4"
   }
 ]
