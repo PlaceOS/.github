@@ -1,0 +1,47 @@
+# Deletes a label across all repos in the current organisation.
+name: Delete Org Label
+
+on:
+  workflow_dispatch:
+    inputs:
+      label:
+        description: 'Name of label to remove'
+        required: true
+
+jobs:
+  delete-label:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v3
+        with:
+          github-token: ${{secrets.ACTIONS_PAT}}
+          script: |
+            const label = core.getInput('label');
+
+            const deleteLabel = async repo => {
+              const issues = await github.issues.listForRepo({
+                ...repo,
+                labels: label
+              });
+              if (issues.data.length > 0) {
+                throw `Label in use in ${repo.repo}`;
+              }
+
+              core.info(`Removing label from ${repo.repo}`);
+              return github.issues.deleteLabel({
+                ...repo,
+                name: label
+              });
+            };
+
+            for await (const response of github.paginate.iterator(
+              github.repos.listForOrg,
+              { org: context.repo.owner }
+            )) {
+              for (const repo of response.data) {
+                await core.group(repo.name, () => deleteLabel({
+                  owner: repo.owner.login,
+                  repo: repo.name
+                }).catch(core.setFailed));
+              };
+            };
