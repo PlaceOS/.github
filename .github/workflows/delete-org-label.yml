@@ -18,13 +18,24 @@ jobs:
           script: |
             const label = context.payload.inputs.label;
 
-            const inUse = async repo => {
-              const issues = await github.issues.listForRepo({...repo, labels: label});
-              return issues.data.length > 0;
-            }
+            // The GitHub API does not filter correctly - result include those
+            // without the specified label too..
+            const inUse = async repo =>
+              (await github.issues.listForRepo({
+                ...repo,
+                labels: label
+              })).data.filter(issue =>
+                issue.labels.find(l => l.name == label) != undefined
+              ).map(issue =>
+                issue.number
+              );
 
             const deleteLabel = async repo => {
-              if (await inUse(repo)) { throw `Label in use in ${repo.repo}` }
+              const issues = await inUse(repo);
+              if (issues.length > 0) {
+                const issueList = issues.map(i => `#${i}`).join(', ');
+                throw `Label in use in ${repo.repo} by ${issueList}`
+              }
               try {
                 await github.issues.deleteLabel({...repo, name: label});
                 core.info(`Dropped \`${label}\` from ${repo.repo}`);
