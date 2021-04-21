@@ -40,14 +40,14 @@
     "color": "ff8c00"
   },
   {
-    "name": "priority: low",
-    "description": null,
-    "color": "0e8a16"
-  },
-  {
     "name": "priority: medium",
     "description": null,
     "color": "fbca04"
+  },
+  {
+    "name": "priority: low",
+    "description": null,
+    "color": "0e8a16"
   },
   {
     "name": "product: placeos",
@@ -86,40 +86,33 @@
   },
   {
     "name": "status: backlog",
-    "description": null,
+    "description": "Backlog item, not for immediate attention",
     "color": "f7c980"
   },
   {
     "name": "status: blocked",
-    "description": null,
+    "description": "This issue is blocked.",
     "color": "d93f0b"
   },
   {
     "name": "status: completed",
-    "description": null,
+    "description": "The issue is complete but not closed.",
     "color": "1d76db"
   },
   {
     "name": "status: duplicate",
-    "description": "This issue or pull request already exists",
-    "color": "000000",
-    "alias": "duplicate"
+    "description": "This issue or pull request already exists.",
+    "color": "000000"
   },
   {
     "name": "status: help wanted",
-    "description": "This issue or pull request already exists",
-    "color": "008672",
-    "alias": "help wanted"
+    "description": "The assignee would like help with this issue.",
+    "color": "008672"
   },
   {
     "name": "status: in progress",
     "description": null,
     "color": "c0c0c0"
-  },
-  {
-    "name": "status: maintenance",
-    "description": null,
-    "color": "e4e669"
   },
   {
     "name": "status: on hold",
@@ -211,11 +204,6 @@
     "name": "type: roadmap",
     "description": "roadmap item",
     "color": "bfdadc"
-  },
-  {
-    "name": "type: wont fix",
-    "description": "this will not be worked on",
-    "color": "ffffff"
   },
     {
     "name": "type: r&d",
