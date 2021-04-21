@@ -157,27 +157,32 @@
   {
     "name": "status: wont fix",
     "description": null,
-    "color": "ffffff"
+    "color": "ffffff",
+    "alias": "wontfix"
   },
   {
     "name": "type: bug",
     "description": "something isn't working",
-    "color": "d93f0b"
+    "color": "d93f0b",
+    "alias": "bug"
   },
   {
     "name": "type: documentation",
     "description": "improvements or additions to documentation",
-    "color": "0075ca"
+    "color": "0075ca",
+    "alias": "documentation"
   },
   {
     "name": "type: enhancement",
     "description": "new feature or request",
-    "color": "a2eeef"
+    "color": "a2eeef",
+    "alias": "enhancement"
   },
   {
     "name": "type: good first issue",
     "description": "good for newcomers",
-    "color": "7057ff"
+    "color": "7057ff",
+    "alias": "good first issue"
   },
   {
     "name": "type: maintenance",
@@ -187,7 +192,8 @@
   {
     "name": "type: question",
     "description": "further information is requested",
-    "color": "d876e3"
+    "color": "d876e3",
+    "alias": "question"
   },
   {
     "name": "type: refactor",
