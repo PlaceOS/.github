@@ -9,7 +9,7 @@ on:
     branches:
       - main
     paths:
-      - .github/workflows/org-labels.yml
+      - .github/workflows/sync-org-labels.yml
       - labels.json
   workflow_dispatch:
 
