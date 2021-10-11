@@ -140,6 +140,16 @@
     "color": "f9d0c4"
   },
   {
+    "name": "status: requires prd",
+    "description": "Feature Request Pending Product/Feature Requirement Doc",
+    "color": "159ce2"
+  },
+  {
+    "name": "status: requires planning",
+    "description": "Feature Request Pending SRS",
+    "color": "de9cb4"
+  },
+  {
     "name": "status: requires testing",
     "description": "Requires Testing",
     "color": "E99695"
@@ -226,8 +236,13 @@
     "color": "4F67B5"
   },
   {
+    "name": "type: new feature",
+    "description": "A new feature",
+    "color": "4F67B5"
+  },
+  {
     "name": "type: discussion",
     "description": "Issue that can be resolved with discussion",
-    "color": "19B1E4"
+    "color": "bcfacd"
   }
 ]
