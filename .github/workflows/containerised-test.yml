@@ -1,5 +1,7 @@
+name: "Containerised Crystal Spec"
 on:
   workflow_call:
+
 jobs:
   test:
     name: 'crystal: ${{ matrix.crystal }}, stable: ${{ matrix.stable }}'
