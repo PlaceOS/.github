@@ -1,0 +1,19 @@
+name: "Crystal Lint"
+on:
+  workflow_call:
+
+jobs:
+  crystal-style:
+    runs-on: ubuntu-latest
+    container: crystallang/crystal:latest
+    strategy:
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v2
+      - name: Format
+        run: crystal tool format --check
+      - name: Lint
+        uses: crystal-ameba/github-action@v0.2.12
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
