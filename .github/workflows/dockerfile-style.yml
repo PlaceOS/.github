@@ -7,23 +7,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: json-array-builder
-        uses: kanga333/json-array-builder@v0.1.0
-        steps:
-        id: array
-        with:
-          cmd: ls Dockerfile.*
-          separator: newline
+      - name: Build a list of Dockerfiles
+        id: set-matrix
+        shell: bash
+        run: |
+          dockerfiles=$(ls Dockerfile* | jq -R -s -c 'split("\n")[:-1]')
+          echo "::set-output name=matrix::$dockerfiles"
     outputs:
-      dockerfiles: ${{ steps.array.outputs.build }}
+      dockerfiles: ${{ steps.set-matrix.outputs.matrix }}
 
   dockerfile-style:
     needs: find-dockerfiles
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-    matrix:
-      dockerfile: ${{ fromJSON(needs.find-dockerfiles.output.dockerfiles) }}
+      matrix:
+        dockerfile: ${{ fromJSON(needs.find-dockerfiles.output.dockerfiles) }}
     steps:
       - uses: actions/checkout@v2
       - name: Lint ${{ matrix.dockerfile }}
