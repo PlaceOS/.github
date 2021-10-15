@@ -1,0 +1,37 @@
+name: "Dockerfile Lint"
+on:
+  workflow_call:
+
+jobs:
+  find-dockerfiles:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: json-array-builder
+        uses: kanga333/json-array-builder@v0.1.0
+        steps:
+        id: array
+        with:
+          cmd: ls Dockerfile.*
+          separator: newline
+    outputs:
+      dockerfiles: ${{ steps.array.outputs.build }}
+
+  dockerfile-style:
+    needs: find-dockerfiles
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    matrix:
+      dockerfile: ${{ fromJSON(needs.find-dockerfiles.output.dockerfiles) }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Lint ${{ matrix.dockerfile }}
+        uses: hadolint/hadolint-action@v1.6.0
+        with:
+          # DL3018 Allow unpinned packages
+          # SC2016 Ignore single-quotes (expansion not desired)
+          # SC1072 This one seems spurious (related to `for` syntax)
+          # DL3059 It's fine to have multiple consecutive runs
+          ignore: DL3018 SC2016 SC1072 DL3059
+          dockerfile: ${{ matrix.dockerfile }}
