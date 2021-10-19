@@ -32,6 +32,6 @@ jobs:
       - uses: actions/checkout@v2
       - name: Run docker-compose test environment
         timeout-minutes: 25
-        run: ./test ${{ matrix.MT && '-Dpreview_mt' || '' }}
+        run: ./test ${{ matrix.MT && '-Dpreview_mt' || '' }} --order random
         env:
           CRYSTAL_VERSION: ${{ matrix.crystal }}
