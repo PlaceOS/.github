@@ -62,6 +62,7 @@ jobs:
         uses: mudlabs/simple-diff@v1.2.0
         with:
           path: shard.lock
+          strict: false
       - name: Render shard.lock diff
         if: ${{ matrix.canary && steps.diff.modified }}
         run: git diff shard.lock
