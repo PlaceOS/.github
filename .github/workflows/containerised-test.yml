@@ -4,33 +4,66 @@ on:
 
 jobs:
   test:
-    name: "${{ !matrix.stable && '🚧 ' || ''}}crystal: ${{ matrix.crystal }}, MT: ${{ matrix.MT }}"
+    name: "${{ !matrix.stable && '🚧 ' || ''}}crystal: ${{ matrix.crystal }}, MT: ${{ matrix.MT }}, canary: ${{ matrix.canary }}"
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         crystal:
           - 1.1.1
-          - 1.2.0
+          - 1.2.1
         MT: [false]
+        canary: [false]
         stable: [true]
         include:
           - crystal: 1.1.1
+            canary: false
             MT: true
             stable: false
-          - crystal: 1.2.0
+          - crystal: 1.2.1
+            canary: false
             MT: true
             stable: false
           - crystal: nightly
+            canary: false
             stable: false
             MT: false
           - crystal: nightly
+            canary: false
+            stable: false
+            MT: true
+          - crystal: 1.1.1
+            canary: true
+            MT: true
+            stable: false
+          - crystal: 1.2.1
+            canary: true
+            MT: true
+            stable: false
+          - crystal: nightly
+            canary: true
+            stable: false
+            MT: false
+          - crystal: nightly
+            canary: true
             stable: false
             MT: true
     continue-on-error: ${{ !matrix.stable }}
     steps:
       - uses: actions/checkout@v2
+      - name: Install crystal
+        if: ${{ matrix.canary }}
+        uses: crystal-lang/install-crystal@v1.5.3
+      - name: Update shards
+        if: ${{ matrix.canary }}
+        run: shards update --ignore-crystal-version
+      - name: shard.lock diff
+        id: diff
+        uses: mudlabs/simple-diff@v1.2.0
+        with:
+          path: shard.lock
       - name: Run docker-compose test environment
+        if ${{ !matrix.canary || steps.diff.modified }}
         timeout-minutes: 25
         run: ./test ${{ matrix.MT && '-Dpreview_mt' || '' }} --order random
         env:
