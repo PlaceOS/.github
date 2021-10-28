@@ -58,6 +58,7 @@ jobs:
         if: ${{ matrix.canary }}
         run: shards update --ignore-crystal-version
       - name: shard.lock diff
+        if: ${{ matrix.canary }}
         id: diff
         uses: mudlabs/simple-diff@v1.2.0
         with:
