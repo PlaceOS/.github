@@ -20,11 +20,6 @@
     "color": "af570e"
   },
   {
-    "name": "focus: documentation",
-    "description": "Focus on Documentation",
-    "color": "0075ca"
-  },
-  {
     "name": "focus: front end",
     "description": "Focus on Front End Development",
     "color": "e6ec48"
@@ -60,26 +55,6 @@
     "color": "e24da9"
   },
   {
-    "name": "squad: core",
-    "description": "PlaceOS Core Development",
-    "color": "4a253c"
-  },
-  {
-    "name": "squad: front end & ux",
-    "description": "Front End and UX Team",
-    "color": "afffb7"
-  },
-  {
-    "name": "squad: portal",
-    "description": "Client Portal Squad",
-    "color": "f602dd"
-  },
-  {
-    "name": "status: abandoned",
-    "description": null,
-    "color": "000000"
-  },
-  {
     "name": "status: accepted",
     "description": "Selected for Development",
     "color": "0e8a16"
@@ -95,79 +70,49 @@
     "color": "d93f0b"
   },
   {
-    "name": "status: completed",
-    "description": "The issue is complete but not closed.",
-    "color": "1d76db"
-  },
-  {
-    "name": "status: duplicate",
-    "description": "This issue or pull request already exists.",
-    "color": "000000"
-  },
-  {
-    "name": "status: help wanted",
-    "description": "The assignee would like help with this issue.",
-    "color": "008672"
-  },
-  {
     "name": "status: in progress",
     "description": null,
-    "color": "c0c0c0"
+    "color": "c0c0c0",
+    "alias":"inprogress"
   },
-  {
-    "name": "status: on hold",
+    {
+    "name": "status: icebox",
     "description": null,
-    "color": "d93f0b"
-  },
-  {
-    "name": "status: pending",
-    "description": null,
-    "color": "fef2c0"
-  },
-  {
-    "name": "status: qa",
-    "description": null,
-    "color": "c0c0c0"
+    "color": "d93f0b",
+    "alias":"icebox"
   },
   {
     "name": "status: rejected",
     "description": null,
-    "color": "3d3e52"
+    "color": "3d3e52",
+    "alias":"rejected"
   },
-  {
+    {
     "name": "status: requires srs",
     "description": "Feature Request Pending SRS",
-    "color": "f9d0c4"
+    "color": "f9d0c4",
+      "alias":"requiressrs"
   },
-  {
-    "name": "status: requires prd",
-    "description": "Feature Request Pending Product/Feature Requirement Doc",
-    "color": "159ce2"
-  },
-  {
-    "name": "status: requires planning",
-    "description": "Feature Request Pending SRS",
-    "color": "de9cb4"
-  },
-  {
-    "name": "status: requires testing",
+   {
+    "name": "status: testing",
     "description": "Requires Testing",
-    "color": "E99695"
+    "color": "E99695",
+    "alias":"testing"
   },
   {
-    "name": "status: stale",
-    "description": "issue identified to be stale",
-    "color": "44424c"
+    "name": "duplicate",
+    "description": "This issue or pull request already exists.",
+    "color": "000000"
   },
   {
-    "name": "status: review needed",
+    "name": "help wanted",
+    "description": "The assignee would like help with this issue.",
+    "color": "008672"
+  },
+  {
+    "name": "wont fix",
     "description": null,
-    "color": "f9d0c4"
-  },
-  {
-    "name": "status: wont fix",
-    "description": null,
-    "color": "ffffff",
+    "color": "000000",
     "alias": "wontfix"
   },
   {
@@ -177,10 +122,22 @@
     "alias": "bug"
   },
   {
+    "name": "type: fix",
+    "description": "fix something that is not a bug",
+    "color": "a2c95e",
+    "alias": "fix"
+  },
+  {
     "name": "type: documentation",
     "description": "improvements or additions to documentation",
     "color": "0075ca",
     "alias": "documentation"
+  },
+  {
+    "name": "type: feature",
+    "description": null,
+    "color": "a2eeef",
+    "alias": "feature"
   },
   {
     "name": "type: enhancement",
@@ -189,21 +146,9 @@
     "alias": "enhancement"
   },
   {
-    "name": "type: good first issue",
-    "description": "good for newcomers",
-    "color": "7057ff",
-    "alias": "good first issue"
-  },
-  {
     "name": "type: maintenance",
     "description": "requires maintenance",
     "color": "e4e669"
-  },
-  {
-    "name": "type: question",
-    "description": "further information is requested",
-    "color": "d876e3",
-    "alias": "question"
   },
   {
     "name": "type: refactor",
@@ -226,6 +171,12 @@
     "color": "3E83FC"
   },
   {
+    "name": "type: tooling",
+    "description": null,
+    "color": "006b75",
+    "alias":"tooling"
+  },
+  {
     "name": "type: chore",
     "description": "Tooling; no production code change or library break fix",
     "color": "006b75"
@@ -244,5 +195,45 @@
     "name": "type: discussion",
     "description": "Issue that can be resolved with discussion",
     "color": "bcfacd"
+  }
+  {
+    "name": "work: chaotic",
+    "description": null,
+    "color": "eec82f",
+    "alias":"chaotic"
+  },
+{
+    "name": "work: complex",
+    "description": null,
+    "color": "cec2f7",
+  "alias":"complex"
+  },
+{
+    "name": "work: complicated",
+    "description": null,
+    "color": "edb6c3",
+  "alias":"complicated"
+  },
+{
+    "name": "work: obvious",
+    "description": null,
+    "color": "a2c95e",
+  "alias":"obvious"
+  },
+{
+    "name": "major-bump",
+    "description": null,
+    "color": "eec82f",
+  "alias":"obvious"
+  },
+{
+    "name": "minor-bump",
+    "description": null,
+    "color": "edb6c3",
+  },
+{
+    "name": "patch-bump",
+    "description": null,
+    "color": "a2c95e",
   }
 ]
