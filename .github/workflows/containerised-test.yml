@@ -2,7 +2,26 @@ name: "Containerised Crystal Spec"
 on:
   workflow_call:
 
+env:
+  CRYSTAL_VERSION: 1.2.1
+
 jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run docker-compose test environment
+        run: ./test --coverage --order random
+        timeout-minutes: 25
+        env:
+          CRYSTAL_VERSION: ${{ env.CRYSTAL_VERSION }}
+      - name: Upload coverage report
+        if: ${{ always() }}
+        uses: codecov/codecov-action@v2
+        with:
+          directory: coverage
+          fail_ci_if_error: true
+
   test:
     name: "${{ !matrix.stable && '🚧 ' || ''}}crystal: ${{ matrix.crystal }}, MT: ${{ matrix.MT }}, canary: ${{ matrix.canary }}"
     runs-on: ubuntu-latest
