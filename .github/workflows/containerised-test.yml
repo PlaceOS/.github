@@ -45,9 +45,14 @@ jobs:
       - name: Install crystal
         if: ${{ matrix.canary }}
         uses: crystal-lang/install-crystal@v1.5.3
-      - name: Update shards
-        if: ${{ matrix.canary }}
-        run: shards update --ignore-crystal-version
+      - uses: actions/cache@v2
+        id: cache-shards
+        with:
+          path: lib
+          key: ${{ hashFiles('shard.lock') }}
+      - name: ${{ matrix.canary && 'Update' || 'Install' }} shards
+        if: ${{ !matrix.canary && steps.cache-shards.outputs.cache-hit != 'true' }}
+        run: shards ${{ matrix.canary && 'update' || 'install' }} --ignore-crystal-version
       - name: shard.lock diff
         if: ${{ matrix.canary }}
         id: diff
