@@ -10,16 +10,11 @@ jobs:
       fail-fast: false
       matrix:
         crystal:
-          - 1.1.1
           - 1.2.1
         MT: [false]
         canary: [false]
         stable: [true]
         include:
-          - crystal: 1.1.1
-            canary: false
-            MT: true
-            stable: false
           - crystal: 1.2.1
             canary: false
             MT: true
@@ -32,10 +27,6 @@ jobs:
             canary: false
             stable: false
             MT: true
-          - crystal: 1.1.1
-            canary: true
-            MT: true
-            stable: false
           - crystal: 1.2.1
             canary: true
             MT: true
