@@ -1,4 +1,4 @@
-name: "Containerised Crystal Spec"
+name: Containerised Crystal Spec
 on:
   workflow_call:
 
@@ -11,12 +11,11 @@ jobs:
       matrix:
         crystal:
           - 1.2.1
-          - 1.2.2
         MT: [false]
         canary: [false]
         stable: [true]
         include:
-          - crystal: 1.2.2
+          - crystal: 1.2.1
             canary: false
             MT: true
             stable: false
@@ -28,7 +27,7 @@ jobs:
             canary: false
             stable: false
             MT: true
-          - crystal: 1.2.2
+          - crystal: 1.2.1
             canary: true
             MT: true
             stable: false
