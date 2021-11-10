@@ -52,7 +52,7 @@ jobs:
           path: lib
           key: ${{ hashFiles('shard.lock') }}
       - name: ${{ matrix.canary && 'Update' || 'Install' }} shards
-        if: ${{ !matrix.canary && steps.cache-shards.outputs.cache-hit != 'true' }}
+        if: ${{ matrix.canary || steps.cache-shards.outputs.cache-hit != 'true' }}
         run: shards ${{ matrix.canary && 'update' || 'install' }} --ignore-crystal-version
       - name: shard.lock diff
         if: ${{ matrix.canary }}
