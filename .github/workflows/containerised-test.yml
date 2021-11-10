@@ -2,20 +2,24 @@ name: "Containerised Crystal Spec"
 on:
   workflow_call:
 
+env:
+  PLACE_CRYSTAL_VERSION: 1.2.1
+
 jobs:
   test:
-    name: "${{ !matrix.stable && '🚧 ' || ''}}crystal: ${{ matrix.crystal }}, MT: ${{ matrix.MT }}, canary: ${{ matrix.canary }}"
+    name: "${{ !matrix.stable && '🚧 ' || ''}}${{}}crystal: ${{ matrix.crystal }}, MT: ${{ matrix.MT }}, canary: ${{ matrix.canary }}"
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         crystal:
-          - 1.2.1
+          - ${{ env.PLACE_CRYSTAL_VERSION }}
+          - 1.2.2
         MT: [false]
         canary: [false]
         stable: [true]
         include:
-          - crystal: 1.2.1
+          - crystal: ${{ env.PLACE_CRYSTAL_VERSION }}
             canary: false
             MT: true
             stable: false
@@ -27,7 +31,7 @@ jobs:
             canary: false
             stable: false
             MT: true
-          - crystal: 1.2.1
+          - crystal: ${{ env.PLACE_CRYSTAL_VERSION }}
             canary: true
             MT: true
             stable: false
