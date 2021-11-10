@@ -50,7 +50,7 @@ RUN apk add --no-cache \
     && \
     update-ca-certificates
 
-COPY scripts /app/scripts
+COPY test-scripts /app/scripts
 
 # These provide certificate chain validation where communicating with external services over TLS
 ENV SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
