@@ -21,4 +21,4 @@ jobs:
           # SC1072 This one seems spurious (related to `for` syntax)
           # DL3059 It's fine to have multiple consecutive runs
           ignore: DL3018 SC2016 SC1072 DL3059
-          dockerfile: ${{ matrix.dockerfile }}
+          dockerfile: ${{ inputs.dockerfile }}
