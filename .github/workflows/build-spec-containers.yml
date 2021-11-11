@@ -12,7 +12,9 @@ jobs:
     strategy:
       matrix:
         crystal:
+          - 1.1.1
           - 1.2.1
+          - 1.2.2
           - nightly
     runs-on: ubuntu-latest
     name: Build ${{ matrix.crystal }}
