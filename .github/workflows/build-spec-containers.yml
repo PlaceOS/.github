@@ -3,6 +3,7 @@ name: Build Spec Containers
 on:
   push:
     paths:
+      - .github/workflows/build-spec-containers.yml
       - Dockerfile
   schedule:
     - cron: '15 3 * * 1'
