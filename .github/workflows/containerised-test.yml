@@ -49,7 +49,9 @@ jobs:
       - uses: actions/cache@v2
         id: cache-shards
         with:
-          path: lib
+          path: |
+            lib
+            bin
           key: ${{ hashFiles('shard.lock') }}
       - name: ${{ matrix.canary && 'Update' || 'Install' }} shards
         if: ${{ matrix.canary || steps.cache-shards.outputs.cache-hit != 'true' }}
