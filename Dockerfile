@@ -20,7 +20,6 @@ FROM crystallang/crystal:${CRYSTAL_VERSION}-alpine as test
 COPY --from=kcov /wd/deps /
 COPY --from=kcov /usr/bin/kcov /usr/bin/kcov
 
-
 # Build crystal kcov tool
 WORKDIR /app
 RUN git clone --depth=1 https://github.com/Vici37/crystal-kcov
@@ -29,8 +28,6 @@ RUN shards build && \
     mv bin/crkcov /usr/bin/crkcov
 WORKDIR /app
 RUN rm -rf crystal-kcov
-
-WORKDIR /app
 
 # Set the commit through a build arg
 ARG PLACE_COMMIT="DEV"
