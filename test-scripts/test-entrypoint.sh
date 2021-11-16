@@ -4,10 +4,10 @@ set -eu
 
 if [ -z ${GITHUB_ACTION+x} ]
 then
-  echo '### `crystal tool format --check`'
+  echo '░░░ `crystal tool format --check`'
   crystal tool format --check
 
-  echo '### `ameba`'
+  echo '░░░ `ameba`'
   crystal lib/ameba/bin/ameba.cr
 fi
 
