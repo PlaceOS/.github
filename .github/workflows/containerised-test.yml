@@ -1,6 +1,11 @@
 name: Containerised Crystal Spec
 on:
   workflow_call:
+    inputs:
+      cache_shards:
+        description: 'Whether or not to cache shards'
+        type: boolean
+        default: true
 
 jobs:
   test:
@@ -47,6 +52,7 @@ jobs:
           crystal: ${{ matrix.crystal }}
       - uses: actions/checkout@v2
       - uses: actions/cache@v2
+        if: ${{ inputs.cache_shards }}
         id: cache-shards
         with:
           path: |
@@ -54,7 +60,7 @@ jobs:
             bin
           key: ${{ hashFiles('shard.lock') }}
       - name: ${{ matrix.canary && 'Update' || 'Install' }} shards
-        if: ${{ matrix.canary || steps.cache-shards.outputs.cache-hit != 'true' }}
+        if: ${{ matrix.canary || !inputs.cache_shards || steps.cache-shards.outputs.cache-hit != 'true' }}
         run: shards ${{ matrix.canary && 'update' || 'install' }} --ignore-crystal-version
       - name: shard.lock diff
         if: ${{ matrix.canary }}
