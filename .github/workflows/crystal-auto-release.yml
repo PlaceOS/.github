@@ -1,0 +1,41 @@
+name: Update Crystal Shard
+description: Simplifies shard version updates.
+on:
+  workflow_call:
+
+jobs:
+  next_version:
+    if: ${{ github.event_name == 'pull_request' && startsWith(github.event.pull_request.labels.*.name, 'bump:') }}
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.bump.outputs.next_version }}
+      skip: ${{  steps.bump.outputs.skip  }}
+    steps:
+      - uses: actions/checkout@v2
+      # Bump version on merging Pull Requests with specific labels.
+      # - bump:major
+      # - bump:minor
+      # - bump:patch
+      - uses: haya14busa/action-bumpr@v1
+        id: bump
+
+  release:
+    if: !needs.next_version.outputs.skip
+    needs: jobs.next_version
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Edit shard.yml
+        uses: fjogeleit/yaml-update-action@v0.6.1
+        with:
+          valueFile: 'shard.yaml'
+          propertyPath: 'version'
+          value: '${{ needs.next_version.outputs.version }}'
+          commitChange: false
+          updateFile: true
+      - name: Commit and tag
+        uses: EndBug/add-and-commit@v7.4.0
+        with:
+          add: 'shard.yml'
+          tag: 'v${{ needs.next_version.outputs.version }}'
+          default_author: github_actions
