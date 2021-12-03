@@ -5,7 +5,7 @@ on:
 
 jobs:
   next_version:
-    if: ${{ github.event_name == 'pull_request' && startsWith(github.event.pull_request.labels.*.name, 'bump:') }}
+    if: github.event_name == 'pull_request' && github.event.action == 'closed' && startsWith(github.event.pull_request.labels.*.name, 'bump:') && github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.bump.outputs.next_version }}
