@@ -1,10 +1,10 @@
 name: Update Crystal Shard
-description: Simplifies shard version updates.
+
 on:
   workflow_call:
 
 jobs:
-  next_version:
+  next-version:
     if: github.event_name == 'pull_request' && github.event.action == 'closed' && startsWith(github.event.pull_request.labels.*.name, 'bump:') && github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     outputs:
@@ -20,8 +20,8 @@ jobs:
         id: bump
 
   release:
-    if: !needs.next_version.outputs.skip
-    needs: jobs.next_version
+    needs: next-version
+    if: needs.next-version.outputs.skip != true
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
