@@ -47,7 +47,7 @@ jobs:
     continue-on-error: ${{ !matrix.stable }}
     steps:
       - name: Install crystal
-        uses: crystal-lang/install-crystal@v1.5.3
+        uses: crystal-lang/install-crystal@v1.6.0
         with:
           crystal: ${{ matrix.crystal }}
       - uses: actions/checkout@v2
