@@ -37,6 +37,7 @@ ARG PLACE_COMMIT="DEV"
 RUN apk add --no-cache \
         bash \
         ca-certificates \
+        curl \
         iputils \
         libelf \
         libssh2-static \
