@@ -4,14 +4,17 @@ on:
   workflow_call:
     inputs:
       dockerfile:
+        description: "Dockerfile that specifies the image"
         default: Dockerfile
         type: string
         required: false
       crystal_version:
+        description: "Crystal compiler version to build the image against"
         default: 1.3.2
         required: false
         type: string
       target:
+        description: "An optional target for repositories that specify multiple services"
         default: ""
         type: string
         required: false
