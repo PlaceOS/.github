@@ -64,7 +64,7 @@ jobs:
       with:
         push: true
         file: ${{ inputs.dockerfile }}
-        tags: ghcr.io/${{ steps.name.outputs.image }}:${{ steps.name.outputs.tag }}
+        tags: ghcr.io/${{ inputs.target != '' &&  inputs.target || steps.name.outputs.image }}:${{ steps.name.outputs.tag }}
         build-args: |
           CRYSTAL_VERSION=${{ inputs.crystal_version }}
           TARGET=${{ inputs.target != '' &&  inputs.target || steps.name.outputs.image }}
