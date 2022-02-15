@@ -34,7 +34,9 @@ ARG PLACE_COMMIT="DEV"
 
 # - Add trusted CAs for communicating with external services
 # - Add watchexec for running tests on change
-RUN apk add --no-cache \
+RUN apk upgrade --no-cache apk \
+    && \
+    apk add --no-cache \
         bash \
         ca-certificates \
         curl \
