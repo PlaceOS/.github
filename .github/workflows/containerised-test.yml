@@ -66,15 +66,14 @@ jobs:
       - name: shard.lock diff
         if: ${{ matrix.canary }}
         id: diff
-        uses: mudlabs/simple-diff@v1.2.0
+        uses: tj-actions/changed-files@v15
         with:
-          path: shard.lock
-          strict: false
+          files: shard.lock
       - name: Render shard.lock diff
-        if: ${{ matrix.canary && steps.diff.modified }}
+        if: ${{ matrix.canary && steps.diff.outputs.any_changed }}
         run: git diff shard.lock
       - name: Run docker-compose test environment
-        if: ${{ !matrix.canary || steps.diff.modified }}
+        if: ${{ !matrix.canary || steps.diff.outouts.any_changed }}
         timeout-minutes: 25
         run: ./test ${{ matrix.MT && '-Dpreview_mt' || '' }} --order random
         env:
