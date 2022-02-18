@@ -52,6 +52,8 @@ jobs:
         with:
           crystal: ${{ matrix.crystal }}
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       - uses: actions/cache@v2
         if: ${{ inputs.cache_shards }}
         id: cache-shards
