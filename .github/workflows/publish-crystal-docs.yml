@@ -1,0 +1,22 @@
+name: "Crystal Docs"
+on:
+  workflow_call:
+
+jobs:
+  publish:
+    if: contains(github.ref, 'refs/tags')
+    runs-on: ubuntu-latest
+    container: crystallang/crystal
+    steps:
+      - uses: actions/checkout@v2
+      - run: shards install --ignore-crystal-version
+      - name: Run `crystal docs`
+        run: crystal docs
+      - name: Publish to GitHub Pages
+        uses: crazy-max/ghaction-github-pages@v2
+        with:
+          target_branch: docs
+          build_dir: docs
+          commit_message: "docs: update for ${{ github.ref }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
