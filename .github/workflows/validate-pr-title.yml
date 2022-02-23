@@ -4,7 +4,17 @@ on:
 
 jobs:
   version:
-    uses: ./.github/workflows/shard-version.yml
+    runs-on: ubuntu-latest
+    container: crystallang/crystal
+    outputs:
+      version: ${{ steps.shards.outputs.version }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          token: "${{ secrets.GITHUB_TOKEN }}"
+      - id: shards
+        run: echo "::set-output name=version::$(shards version)"
 
   validate:
     needs: version
