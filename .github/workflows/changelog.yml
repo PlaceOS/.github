@@ -1,27 +1,42 @@
 name: Changelog
 on:
   workflow_call:
-    inputs:
-      current_version:
-        description: Current version of project
-        type: string
-        required: true
+    outputs:
+      version:
+        description: "New version"
+        value: ${{ jobs.generate.outputs.version }}
 
 jobs:
-  generate:
+  version:
     runs-on: ubuntu-latest
+    container: crystallang/crystal
+    outputs:
+      version: ${{ steps.shards.outputs.version }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          token: "${{ secrets.GITHUB_TOKEN }}"
+      - id: shards
+        run: echo "::set-output name=version::$(shards version)"
+
+  generate:
+    needs: version
+    if: "!startsWith(github.event.head_commit.message, 'bump:')"
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.cz.outputs.version }}
     steps:
       - uses: actions/checkout@v2
         with:
         fetch-depth: 0
-      - shell: bash
-        run: |
+      - run: |
           cat << EOF > .cz.yaml
           commitizen:
             tag_format: v$version
             changelog_incremental: true
             update_changelog_on_bump: true
-            version: ${{ inputs.current_version }}
+            version: ${{ version.outputs.version }}
             version_files:
             - shard.yml:^version
           EOF
