@@ -20,6 +20,7 @@ jobs:
     needs: version
     if: "!startsWith(github.event.head_commit.message, 'bump:')"
     runs-on: ubuntu-latest
+    container: commitizen/commitizen:2
     steps:
       - uses: actions/checkout@v2
         with:
@@ -33,4 +34,6 @@ jobs:
             version: ${{ needs.version.outputs.version }}
           EOF
       - name: Validate PR title with commitizen
-        uses: CashStory/commitizen-action-pr@1.0.1
+        shell: bash
+        run: |
+          cz check -m ${{ github.event.pull_request.title }}
