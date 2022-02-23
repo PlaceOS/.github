@@ -1,0 +1,34 @@
+name: Changelog
+on:
+  workflow_call:
+    inputs:
+      current_version:
+        description: Current version of project
+        type: string
+        required: true
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+        fetch-depth: 0
+      - shell: bash
+        run: |
+          cat << EOF > .cz.yaml
+          commitizen:
+            tag_format: v$version
+            changelog_incremental: true
+            update_changelog_on_bump: true
+            version: ${{ inputs.current_version }}
+            version_files:
+            - shard.yml:^version
+          EOF
+      - id: cz
+        name: Create bump and changelog
+        uses: commitizen-tools/commitizen-action@0.11.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          git_email: robots@placeos.com
+          git_name: PlaceOS Robot

@@ -1,0 +1,26 @@
+name: Validate PR Title
+on:
+  workflow_call:
+
+jobs:
+  version:
+    uses: ./.github/workflows/shard-version.yml
+
+  validate:
+    needs: version
+    if: "!startsWith(github.event.head_commit.message, 'bump:')"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          token: "${{ secrets.GITHUB_TOKEN }}"
+      - shell: bash
+        run: |
+          cat << EOF > .cz.yaml
+          commitizen:
+            tag_format: v$version
+            version: ${{ needs.version.outputs.version }}
+          EOF
+      - name: Validate PR title with commitizen
+        uses: CashStory/commitizen-action-pr@1.0.1
