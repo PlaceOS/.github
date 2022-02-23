@@ -33,5 +33,16 @@ jobs:
             version: ${{ needs.version.outputs.version }}
           EOF
       - name: Validate PR title with commitizen
+        continue-on-error: true
         run: |
           cz check -m "${{ github.event.pull_request.title }}"
+      - uses: mshick/add-pr-comment@v1
+        if: ${{ failure() }}
+        with:
+          message: |
+            Hey, your PR is titled `${{ github.event.pull_request.title }}`.
+            This is not a valid [conventional commit](https://www.conventionalcommits.org/).
+            Since we use well-formed PR titles for our changelogs, not fixing this can introduce problems :'(
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          repo-token-user-login: 'robots@placeos.com'
+          allow-repeats: false
