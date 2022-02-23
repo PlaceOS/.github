@@ -16,7 +16,6 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
-          token: "${{ secrets.GITHUB_TOKEN }}"
       - id: shards
         run: echo "::set-output name=version::$(shards version)"
 
@@ -29,14 +28,14 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-        fetch-depth: 0
+          fetch-depth: 0
       - run: |
           cat << EOF > .cz.yaml
           commitizen:
             tag_format: v$version
             changelog_incremental: true
             update_changelog_on_bump: true
-            version: ${{ version.outputs.version }}
+            version: ${{ needs.version.outputs.version }}
             version_files:
             - shard.yml:^version
           EOF
