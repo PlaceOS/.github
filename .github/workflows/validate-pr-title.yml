@@ -26,14 +26,12 @@ jobs:
         with:
           fetch-depth: 0
           token: "${{ secrets.GITHUB_TOKEN }}"
-      - shell: ash
-        run: |
+      - run: |
           cat << EOF > .cz.yaml
           commitizen:
             tag_format: v$version
             version: ${{ needs.version.outputs.version }}
           EOF
       - name: Validate PR title with commitizen
-        shell: ash
         run: |
           cz check -m ${{ github.event.pull_request.title }}
