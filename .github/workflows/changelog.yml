@@ -4,6 +4,7 @@ on:
     inputs:
       auto-bump:
         default: true
+        type: boolean
         description: Whether or not to auto-bump the application
         required: false
 
