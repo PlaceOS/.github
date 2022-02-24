@@ -71,7 +71,8 @@ jobs:
             CHANGELOG.md 
 
           # Commit changes
-          git commit -m "docs(CHANGELOG): update for ${{ github.sha }}" CHANGELOG.md
+          git commit -m "docs(CHANGELOG): update for ${{ github.sha }}" CHANGELOG.md \
+            || echo "Nothing to commit."
         env:
           GIT_COMMITTER_NAME: PlaceOS Robot
           GIT_COMMITTER_EMAIL: robots@placeos.com
