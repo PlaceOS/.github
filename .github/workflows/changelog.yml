@@ -20,13 +20,13 @@ jobs:
     needs: version
     runs-on: ubuntu-latest
     container: commitizen/commitizen:2
-    outputs:
-      version: ${{ steps.cz.outputs.version }}
     steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
-      - run: |
+      - name: Bump and generate CHANGELOG
+        run: |
+          # Generate commitizen config
           cat << EOF > .cz.yaml
           commitizen:
             version: ${{ needs.version.outputs.version }}
@@ -39,8 +39,6 @@ jobs:
             version_files:
             - shard.yml:^version
           EOF
-      - name: Bump and generate CHANGELOG
-        run: |
           cz bump
         env:
           GIT_AUTHOR_NAME: PlaceOS Robot
