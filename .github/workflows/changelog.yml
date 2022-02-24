@@ -23,14 +23,17 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Install commitizen
+      - name: Install commitizen, git
         run: |
+          sudo apt install git
           pip install -U commitizen
+      - run: cz version
+      - run: echo ${{ needs.version.outputs.version }}
+      - run: git tag --list
       - name: Bump and generate CHANGELOG
         run: |
           # Generate commitizen config
-          cat << EOF > .cz.yaml
+          cat << 'EOF' > .cz.yaml
           commitizen:
             version: ${{ needs.version.outputs.version }}
             tag_format: v$version
@@ -44,19 +47,27 @@ jobs:
           EOF
           cz bump
         env:
+          GIT_COMMITTER_NAME: PlaceOS Robot
+          GIT_COMMITTER_EMAIL: robots@placeos.com
           GIT_AUTHOR_NAME: PlaceOS Robot
           GIT_AUTHOR_EMAIL: robots@placeos.com
       - name: Adds links to PRs
         run: |
           # Escape the forward-slash for use in `sed`
           escaped_repository=$(echo ${{ github.repository }} | sed 's/\//\\\//')
+
           # Replace PR references (e.g. "#1") with links to their PR on GitHub
-          sed \
-            -E -i '' \
+          sed -E -i \
             "s/#([0-9]+)/[#\1]\(https:\/\/github.com\/${escaped_repository}\/pull\/\1)/g" \
-            CHANGELOG.md
+            CHANGELOG.md 
+
           # Amend the previous commit
           git commit --amend --no-edit CHANGELOG.md
+        env:
+          GIT_COMMITTER_NAME: PlaceOS Robot
+          GIT_COMMITTER_EMAIL: robots@placeos.com
+          GIT_AUTHOR_NAME: PlaceOS Robot
+          GIT_AUTHOR_EMAIL: robots@placeos.com
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
