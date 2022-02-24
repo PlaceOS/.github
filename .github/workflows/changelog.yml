@@ -19,14 +19,13 @@ jobs:
   generate:
     needs: version
     runs-on: ubuntu-latest
-    container: python:3.10-alpine
     steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
-      - name: Install commitizen and git
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install commitizen
         run: |
-          apk add git
           pip install -U commitizen
       - name: Bump and generate CHANGELOG
         run: |
