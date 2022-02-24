@@ -24,8 +24,9 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
-      - name: Install commitizen
+      - name: Install commitizen and git
         run: |
+          apk add git
           pip install -U commitizen
       - name: Bump and generate CHANGELOG
         run: |
