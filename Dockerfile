@@ -1,7 +1,9 @@
-ARG CRYSTAL_VERSION=1.1.1
+ARG CRYSTAL_VERSION=1.3.2
 
 FROM flant/kcov-alpine:v0.6 as kcov
 WORKDIR /wd
+
+SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 
 # Extract binary dependencies
 RUN for binary in "/usr/bin/kcov"; do \
