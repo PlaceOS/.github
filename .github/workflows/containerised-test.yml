@@ -74,7 +74,7 @@ jobs:
         if: ${{ matrix.canary && steps.diff.outputs.any_changed }}
         run: git diff shard.lock
       - name: Run docker-compose test environment
-        if: ${{ !matrix.canary || steps.diff.outouts.any_changed }}
+        if: ${{ !matrix.canary || steps.diff.outputs.any_changed }}
         timeout-minutes: 25
         run: ./test ${{ matrix.MT && '-Dpreview_mt' || '' }} --order random
         env:
