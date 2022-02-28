@@ -1,7 +1,5 @@
 name: 'Dockerfile Lint'
 on:
-  push:
-
   workflow_call:
     inputs:
       dockerfile:
