@@ -1,7 +1,7 @@
-name: 'Lints'
+name: Lints
 on:
   push:
 
 jobs:
   dockerfile-style:
-    uses: ".github/workflows/dockerfile-style.yml"
+    uses: .github/workflows/dockerfile-style.yml@main
