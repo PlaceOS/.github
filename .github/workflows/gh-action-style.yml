@@ -1,0 +1,19 @@
+name: GH Action Style
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/**'
+
+jobs:
+  actionlint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: actionlint
+        uses: reviewdog/action-actionlint@v1.14.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          level: info
+          reporter: github-pr-review
+          filter_mode: nofilter

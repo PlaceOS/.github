@@ -19,6 +19,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: caspiano/todo-to-issue-action@feat/crystal
+        with:
+          AUTO_ASSIGN: true # Assign issue to whoever wrote the todo
 
   test:
     name: "${{ !matrix.stable && '🚧 ' || '' }}crystal: ${{ matrix.crystal }}, MT: ${{ matrix.MT && '☑' || '☐' }}, canary: ${{ matrix.canary && '☑' || '☐' }}"
