@@ -6,8 +6,20 @@ on:
         description: 'Whether or not to cache shards'
         type: boolean
         default: true
+      todo_issues:
+        descripton: 'Whether or not to convert found TODOs to issues'
+        type: boolean
+        default: false
 
 jobs:
+  todo-issues:
+    if: ${{ inputs.todo_issues }}
+    name: TODOs → GitHub Issues
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: caspiano/todo-to-issue-action@feat/crystal
+
   test:
     name: "${{ !matrix.stable && '🚧 ' || '' }}crystal: ${{ matrix.crystal }}, MT: ${{ matrix.MT && '☑' || '☐' }}, canary: ${{ matrix.canary && '☑' || '☐' }}"
     runs-on: ubuntu-latest
