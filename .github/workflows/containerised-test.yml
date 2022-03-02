@@ -7,7 +7,7 @@ on:
         type: boolean
         default: true
       todo_issues:
-        descripton: 'Whether or not to convert found TODOs to issues'
+        description: 'Whether or not to convert found TODOs to issues'
         type: boolean
         default: false
 
