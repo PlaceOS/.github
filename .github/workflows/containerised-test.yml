@@ -6,6 +6,10 @@ on:
         description: 'Whether or not to cache shards'
         type: boolean
         default: true
+      first_commit:
+        description: 'Commit to force creation of TODOs'
+        type: string
+        default: '0000000000000000000000000000000000000000'
       todo_issues:
         description: 'Whether or not to convert found TODOs to issues'
         type: boolean
@@ -21,6 +25,7 @@ jobs:
       - uses: caspiano/todo-to-issue-action@feat/crystal
         with:
           AUTO_ASSIGN: true # Assign issue to whoever wrote the todo
+          BEFORE: ${{ inputs.first_commit }}
 
   test:
     name: "${{ !matrix.stable && '🚧 ' || '' }}crystal: ${{ matrix.crystal }}, MT: ${{ matrix.MT && '☑' || '☐' }}, canary: ${{ matrix.canary && '☑' || '☐' }}"
