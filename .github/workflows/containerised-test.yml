@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: caspiano/todo-to-issue-action@feat/crystal
+      - uses: alstr/todo-to-issue-action@v4.6.3
         with:
           AUTO_ASSIGN: true # Assign issue to whoever wrote the todo
           BEFORE: ${{ inputs.first_commit }}
