@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     container: crystallang/crystal
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - run: shards install --ignore-crystal-version
       - name: Run `crystal docs`
         run: crystal docs
