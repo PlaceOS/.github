@@ -28,7 +28,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          fetch-depth: 0
+          persist-credentials: false # Use PAT
+          fetch-depth: 0             # Fetch entire commit/tag history
       - name: Install commitizen, git
         run: |
           sudo apt install git
