@@ -1,7 +1,7 @@
 name: GH Action Style
 
 on:
-  pull_request:
+  push:
     paths:
       - '.github/workflows/**'
 
