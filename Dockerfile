@@ -1,12 +1,12 @@
 ARG CRYSTAL_VERSION=1.3.2
 
-FROM flant/kcov-alpine:v0.6 as kcov
+FROM kcov/kcov:v40 as kcov
 WORKDIR /wd
 
-SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-eo", "pipefail", "-c"]
 
 # Extract binary dependencies
-RUN for binary in "/usr/bin/kcov"; do \
+RUN for binary in "/usr/local/bin/kcov"; do \
         ldd "$binary" | \
         tr -s '[:blank:]' '\n' | \
         grep '^/' | \
@@ -20,7 +20,7 @@ FROM crystallang/crystal:${CRYSTAL_VERSION}-alpine as test
 
 # Add kcov
 COPY --from=kcov /wd/deps /
-COPY --from=kcov /usr/bin/kcov /usr/bin/kcov
+COPY --from=kcov /usr/local/bin/kcov /usr/bin/kcov
 
 # Build crystal kcov tool
 WORKDIR /app
