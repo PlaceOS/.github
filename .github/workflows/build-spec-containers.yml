@@ -5,6 +5,7 @@ on:
     paths:
       - .github/workflows/build-spec-containers.yml
       - Dockerfile
+      - test-scripts
   schedule:
     - cron: '15 3 * * 1'
 
