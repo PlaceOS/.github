@@ -5,7 +5,7 @@ ARG CRYSTAL_VERSION=1.3.2
 # using 3.12 to match the version used by crystal
 FROM alpine:3.12 as kcov
 
-SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-eo", "pipefail", "-c"]
 
 RUN apk update && \
     apk add --no-cache \
