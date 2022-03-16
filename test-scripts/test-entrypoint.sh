@@ -39,7 +39,7 @@ shards check --ignore-crystal-version -q &> /dev/null || shards install --ignore
 if [[ "$watch" == "true" ]]; then
   CRYSTAL_WORKERS=$(nproc) watchexec -e cr -c -r -w src -w spec -- scripts/crystal-spec.sh -v $PARAMS
 elif [[ "$coverage" == "true" ]]; then
-  CRYSTAL_WORKERS=$(nproc) crkcov --executable-args="$PARAMS"
+  CRYSTAL_WORKERS=$(nproc) crkcov --verbose --output --executable-args "$PARAMS"
 else
   CRYSTAL_WORKERS=$(nproc) scripts/crystal-spec.sh -v $PARAMS
 fi
