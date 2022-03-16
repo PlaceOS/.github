@@ -2,8 +2,6 @@ name: Build Spec Containers
 
 on:
   push:
-    branches:
-      - main
     paths:
       - .github/workflows/build-spec-containers.yml
       - Dockerfile
@@ -54,6 +52,7 @@ jobs:
 
   publish:
     needs: build
+    if: contains(github.ref, 'refs/heads/main')
     runs-on: ubuntu-latest
     name: Publish
     steps:
