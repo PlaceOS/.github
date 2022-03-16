@@ -1,9 +1,38 @@
 ARG CRYSTAL_VERSION=1.3.2
 
-FROM kcov/kcov:v40 as kcov
-WORKDIR /wd
+# Build kcov
+###############################################################################
+# using 3.12 to match the version used by crystal
+FROM alpine:3.12 as kcov
 
 SHELL ["/bin/bash", "-eo", "pipefail", "-c"]
+
+RUN apk update && \
+    apk add --no-cache \
+    curl \
+    cmake \
+    make \
+    gcc \
+    g++ \
+    binutils-dev \
+    zlib-dev \
+    curl-dev \
+    elfutils-dev \
+    python3
+
+WORKDIR /kcov
+ENV KCOV_VERSION=40 CXXFLAGS="-D__ptrace_request=int"
+RUN mkdir -p kcov-$KCOV_VERSION/build bin && \
+    curl --location https://github.com/SimonKagstrom/kcov/archive/v$KCOV_VERSION.tar.gz \
+    | tar xzC ./ && \
+    cd kcov-$KCOV_VERSION/build && \
+    cmake \
+    -Wno-dev \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=/local \
+    .. && \
+    make --jobs 2 || exit 1 && \
+    make install DESTDIR=/usr || exit 1
 
 # Extract binary dependencies
 RUN for binary in "/usr/local/bin/kcov"; do \
@@ -15,11 +44,10 @@ RUN for binary in "/usr/local/bin/kcov"; do \
 
 # Test Container
 ###############################################################################
-
 FROM crystallang/crystal:${CRYSTAL_VERSION}-alpine as test
 
 # Add kcov
-COPY --from=kcov /wd/deps /
+COPY --from=kcov /kcov/deps /
 COPY --from=kcov /usr/local/bin/kcov /usr/bin/kcov
 
 # Build crystal kcov tool
