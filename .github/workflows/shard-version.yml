@@ -1,0 +1,21 @@
+name: Extract Shard Version
+on:
+  workflow_call:
+    outputs:
+      version:
+        description: "Output of `shards version`"
+        value: ${{ jobs.version.outputs.version }}
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    container: crystallang/crystal
+    outputs:
+      version: ${{ steps.shards.outputs.version }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          token: "${{ secrets.GITHUB_TOKEN }}"
+      - id: shards
+        run: echo "::set-output name=version::$(shards version)"

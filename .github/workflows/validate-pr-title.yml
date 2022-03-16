@@ -1,0 +1,48 @@
+name: Validate PR Title
+on:
+  workflow_call:
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    container: crystallang/crystal
+    outputs:
+      version: ${{ steps.shards.outputs.version }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          token: "${{ secrets.GITHUB_TOKEN }}"
+      - id: shards
+        run: echo "::set-output name=version::$(shards version)"
+
+  validate:
+    needs: version
+    if: "!startsWith(github.event.head_commit.message, 'bump:')"
+    runs-on: ubuntu-latest
+    container: commitizen/commitizen:2
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          token: "${{ secrets.GITHUB_TOKEN }}"
+      - run: |
+          cat << EOF > .cz.yaml
+          commitizen:
+            tag_format: v$version
+            version: ${{ needs.version.outputs.version }}
+          EOF
+      - name: Validate PR title with commitizen
+        continue-on-error: true
+        run: |
+          cz check -m "${{ github.event.pull_request.title }}"
+      - uses: mshick/add-pr-comment@v1
+        if: ${{ failure() }}
+        with:
+          message: |
+            Hey, your PR is titled `${{ github.event.pull_request.title }}`.
+            This is not a valid [conventional commit](https://www.conventionalcommits.org/).
+            Since we use well-formed PR titles for our changelogs, not fixing this can introduce problems :'(
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          repo-token-user-login: 'robots@placeos.com'
+          allow-repeats: false

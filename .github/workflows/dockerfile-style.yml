@@ -1,31 +1,19 @@
-name: "Dockerfile Lint"
+name: 'Dockerfile Lint'
 on:
   workflow_call:
+    inputs:
+      dockerfile:
+        description: 'Dockerfile to lint'
+        required: false
+        type: string
+        default: 'Dockerfile'
 
 jobs:
-  find-dockerfiles:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Build a list of Dockerfiles
-        id: set-matrix
-        shell: bash
-        run: |
-          dockerfiles="$(ls Dockerfile* | jq -R -s -c 'split("\n")[:-1]')"
-          echo "::set-output name=matrix::${dockerfiles}"
-    outputs:
-      dockerfiles: ${{ steps.set-matrix.outputs.matrix }}
-
   dockerfile-style:
-    needs: find-dockerfiles
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        dockerfile: ${{ fromJSON(needs.find-dockerfiles.output.dockerfiles) }}
     steps:
-      - uses: actions/checkout@v2
-      - name: Lint ${{ matrix.dockerfile }}
+      - uses: actions/checkout@v3
+      - name: Lint ${{ inputs.dockerfile }}
         uses: hadolint/hadolint-action@v1.6.0
         with:
           # DL3018 Allow unpinned packages
@@ -33,4 +21,4 @@ jobs:
           # SC1072 This one seems spurious (related to `for` syntax)
           # DL3059 It's fine to have multiple consecutive runs
           ignore: DL3018 SC2016 SC1072 DL3059
-          dockerfile: ${{ matrix.dockerfile }}
+          dockerfile: ${{ inputs.dockerfile }}

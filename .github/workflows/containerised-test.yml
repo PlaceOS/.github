@@ -1,9 +1,22 @@
-name: "Containerised Crystal Spec"
+name: Containerised Crystal Spec
 on:
   workflow_call:
+    inputs:
+      cache_shards:
+        description: 'Whether or not to cache shards'
+        type: boolean
+        default: true
+      first_commit:
+        description: 'Commit to force creation of TODOs'
+        type: string
+        default: '0000000000000000000000000000000000000000'
+      todo_issues:
+        description: 'Whether or not to convert found TODOs to issues'
+        type: boolean
+        default: false
 
 env:
-  CRYSTAL_VERSION: 1.2.1
+  CRYSTAL_VERSION: 1.3.2
 
 jobs:
   coverage:
@@ -22,19 +35,30 @@ jobs:
           directory: coverage
           fail_ci_if_error: true
 
+  todo-issues:
+    if: ${{ inputs.todo_issues }}
+    name: TODOs → GitHub Issues
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: alstr/todo-to-issue-action@v4.6.3
+        with:
+          AUTO_ASSIGN: true # Assign issue to whoever wrote the todo
+          BEFORE: ${{ inputs.first_commit }}
+
   test:
-    name: "${{ !matrix.stable && '🚧 ' || ''}}crystal: ${{ matrix.crystal }}, MT: ${{ matrix.MT }}, canary: ${{ matrix.canary }}"
+    name: "${{ !matrix.stable && '🚧 ' || '' }}crystal: ${{ matrix.crystal }}, MT: ${{ matrix.MT && '☑' || '☐' }}, canary: ${{ matrix.canary && '☑' || '☐' }}"
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         crystal:
-          - 1.2.1
+          - 1.3.2
         MT: [false]
         canary: [false]
         stable: [true]
         include:
-          - crystal: 1.2.1
+          - crystal: 1.3.2
             canary: false
             MT: true
             stable: false
@@ -46,7 +70,7 @@ jobs:
             canary: false
             stable: false
             MT: true
-          - crystal: 1.2.1
+          - crystal: 1.3.2
             canary: true
             MT: true
             stable: false
@@ -60,25 +84,35 @@ jobs:
             MT: true
     continue-on-error: ${{ !matrix.stable }}
     steps:
-      - uses: actions/checkout@v2
       - name: Install crystal
-        if: ${{ matrix.canary }}
-        uses: crystal-lang/install-crystal@v1.5.3
-      - name: Update shards
-        if: ${{ matrix.canary }}
-        run: shards update --ignore-crystal-version
+        uses: crystal-lang/install-crystal@v1.6.0
+        with:
+          crystal: ${{ matrix.crystal }}
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/cache@v2
+        if: ${{ inputs.cache_shards }}
+        id: cache-shards
+        with:
+          path: |
+            lib
+            bin
+          key: ${{ hashFiles('shard.lock') }}
+      - name: ${{ matrix.canary && 'Update' || 'Install' }} shards
+        if: ${{ matrix.canary || !inputs.cache_shards || steps.cache-shards.outputs.cache-hit != 'true' }}
+        run: shards ${{ matrix.canary && 'update' || 'install' }} --ignore-crystal-version
       - name: shard.lock diff
         if: ${{ matrix.canary }}
         id: diff
-        uses: mudlabs/simple-diff@v1.2.0
+        uses: tj-actions/changed-files@v17.3
         with:
-          path: shard.lock
-          strict: false
+          files: shard.lock
       - name: Render shard.lock diff
-        if: ${{ matrix.canary && steps.diff.modified }}
+        if: ${{ matrix.canary && steps.diff.outputs.any_changed }}
         run: git diff shard.lock
       - name: Run docker-compose test environment
-        if: ${{ !matrix.canary || steps.diff.modified }}
+        if: ${{ !matrix.canary || steps.diff.outputs.any_changed }}
         timeout-minutes: 25
         run: ./test ${{ matrix.MT && '-Dpreview_mt' || '' }} --order random
         env:

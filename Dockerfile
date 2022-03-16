@@ -1,10 +1,12 @@
-ARG CRYSTAL_VERSION=1.1.1
+ARG CRYSTAL_VERSION=1.3.2
 
-FROM flant/kcov-alpine:v0.6 as kcov
+FROM kcov/kcov:v40 as kcov
 WORKDIR /wd
 
+SHELL ["/bin/bash", "-eo", "pipefail", "-c"]
+
 # Extract binary dependencies
-RUN for binary in "/usr/bin/kcov"; do \
+RUN for binary in "/usr/local/bin/kcov"; do \
         ldd "$binary" | \
         tr -s '[:blank:]' '\n' | \
         grep '^/' | \
@@ -18,8 +20,7 @@ FROM crystallang/crystal:${CRYSTAL_VERSION}-alpine as test
 
 # Add kcov
 COPY --from=kcov /wd/deps /
-COPY --from=kcov /usr/bin/kcov /usr/bin/kcov
-
+COPY --from=kcov /usr/local/bin/kcov /usr/bin/kcov
 
 # Build crystal kcov tool
 WORKDIR /app
@@ -30,16 +31,17 @@ RUN shards build && \
 WORKDIR /app
 RUN rm -rf crystal-kcov
 
-WORKDIR /app
-
 # Set the commit through a build arg
 ARG PLACE_COMMIT="DEV"
 
 # - Add trusted CAs for communicating with external services
 # - Add watchexec for running tests on change
-RUN apk add --no-cache \
+RUN apk upgrade --no-cache apk \
+    && \
+    apk add --no-cache \
         bash \
         ca-certificates \
+        curl \
         iputils \
         libelf \
         libssh2-static \
@@ -55,4 +57,4 @@ COPY test-scripts /app/scripts
 # These provide certificate chain validation where communicating with external services over TLS
 ENV SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
 
-ENTRYPOINT ["/app/scripts/entrypoint.sh"]
+ENTRYPOINT ["/app/scripts/test-entrypoint.sh"]

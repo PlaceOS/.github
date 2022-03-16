@@ -4,10 +4,10 @@ set -eu
 
 if [ -z ${GITHUB_ACTION+x} ]
 then
-  echo '### `crystal tool format --check`'
+  echo '░░░ `crystal tool format --check`'
   crystal tool format --check
 
-  echo '### `ameba`'
+  echo '░░░ `ameba`'
   crystal lib/ameba/bin/ameba.cr
 fi
 
@@ -34,7 +34,7 @@ do
   esac
 done
 
-shards check --ignore-crystal-version || shards install --ignore-crystal-version
+shards check --ignore-crystal-version -q &> /dev/null || shards install --ignore-crystal-version
 
 if [[ "$watch" == "true" ]]; then
   CRYSTAL_WORKERS=$(nproc) watchexec -e cr -c -r -w src -w spec -- scripts/crystal-spec.sh -v $PARAMS

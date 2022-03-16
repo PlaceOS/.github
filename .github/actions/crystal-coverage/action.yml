@@ -1,0 +1,50 @@
+name: Crystal Coverage
+description: Runs crystal-kcov, generating a coverage report
+
+runs:
+  using: composite
+  steps:
+    -
+      name: Build kcov
+      shell: bash
+      run: |
+        sudo apt-get install \
+          binutils-dev \
+          cmake \
+          libcurl4-openssl-dev \
+          libdw-dev \
+          libiberty-dev \
+          make \
+          zlib1g-dev
+        git clone https://github.com/SimonKagstrom/kcov
+        cd kcov
+        git checkout v39
+        cmake .
+        make
+        sudo make install
+        cd ..
+    -
+      name: Build crystal-kcov
+      uses: actions/checkout@v2
+      with:
+        repository: Vici37/crystal-kcov
+        ref: 794b74f590561e20da19141beeacfa79095f6e4f
+        fetch-depth: 1
+    -
+      name: Build crystal-kcov tool
+      shell: bash
+      run: |
+        cd crystal-kcov
+        shards build
+        cd ..
+    -
+      name: Run coverage tests
+      shell: bash
+      run: ./crystal-coverage/bin/crkcov
+    -
+      name: Upload coverage report
+      if: ${{ always() }}
+      uses: codecov/codecov-action@v2
+      with:
+        directory: coverage
+        fail_ci_if_error: true

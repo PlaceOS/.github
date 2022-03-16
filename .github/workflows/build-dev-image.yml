@@ -1,96 +1,77 @@
-name: Build Dev Image
+name: Development Image
 
 on:
-  repository_dispatch:
-    types: [ build-dev-image ]
-
-env:
-  RUN_URL: ${{env.GITHUB_SERVER_URL}}/${{env.GITHUB_REPOSITORY}}/actions/runs/${{env.GITHUB_RUN_ID}}
+  workflow_call:
+    inputs:
+      dockerfile:
+        description: "Dockerfile that specifies the image"
+        default: Dockerfile
+        type: string
+        required: false
+      crystal_version:
+        description: "Crystal compiler version to build the image against"
+        default: 1.3.2
+        required: false
+        type: string
+      target:
+        description: "An optional target for repositories that specify multiple services"
+        default: ""
+        type: string
+        required: false
+    secrets:
+      GHCR_PAT:
+        description: Token to push to Github Container Registry
+        required: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    name: Build
     steps:
-      -
-        id: conf
-        uses: actions/github-script@v5
-        with:
-          script: |
-            const { repository, ref, sha } = context.payload.client_payload;
-            const [ owner, repo ] = repository.split('/');
-            let tag = ref.replace(/^refs\/((heads)|(tags))\//, '');
-            tag = tag.replace(/[^\w\.\-]/g, '-');
-            if (owner != context.repo.owner) {
-              core.setFailed(`Build requested for external repo: ${repository}`);
-            }
-            core.info(`Build requested for ${repository}:${tag} @ ${sha}`);
-            core.setOutput('owner', owner);
-            core.setOutput('repo', repo);
-            core.setOutput('sha', sha);
-            core.setOutput('tag', tag);
-            core.setOutput('uri', `https://github.com/${owner}/${repo}`);
-      -
-        uses: actions/github-script@v5
-        with:
-          script: |
-            github.repos.createCommitStatus({
-              ...context.payload.client_payload,
-              state: 'pending',
-              target_url: process.env.RUN_URL
-            });
-      -
-        uses: docker/setup-qemu-action@v1
-      -
-        uses: docker/setup-buildx-action@v1
-      -
-        uses: actions/cache@v2
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ steps.conf.outputs.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
-      -
-        uses: docker/login-action@v1
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GHCR_PAT }}
-      -
-        id: build
-        uses: docker/build-push-action@v2
-        env:
-          img: ${{ steps.conf.outputs.owner }}/${{ steps.conf.outputs.repo }}
-          tag: ${{ steps.conf.outputs.tag }}
-          sha: ${{ steps.conf.outputs.sha }}
-          uri: ${{ steps.conf.outputs.uri }}
-        with:
-          context: ${{ env.url }}#${{ env.sha }}
-          push: true
-          tags: ghcr.io/${{ env.img }}:${{ env.tag }}
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache
-          labels: |
-            org.opencontainers.image.url=${{ env.uri }}
-            org.opencontainers.image.source=${{ env.uri }}/commits/${{ env.sha }}
-            org.opencontainers.image.revision=${{ env.sha }}
-      -
-        uses: actions/github-script@v5
-        if: ${{ success() }}
-        with:
-          script: |
-            github.repos.createCommitStatus({
-              ...context.payload.client_payload,
-              state: 'success',
-              target_url: process.env.RUN_URL
-            });
-      -
-        uses: actions/github-script@v5
-        if: ${{ failure() }}
-        with:
-          script: |
-            github.repos.createCommitStatus({
-              ...context.payload.client_payload,
-              state: 'failure',
-              target_url: process.env.RUN_URL
-            });
-
+    -
+      name: Extract names
+      id: name
+      run: |
+        echo ::set-output name=image::${GITHUB_REPOSITORY,,}
+        echo ::set-output name=tag::$(echo ${GITHUB_REF#refs/heads/} | sed 's/[^[:alnum:]\.\_\-]/-/g')
+      env:
+        GITHUB_REPOSITORY: ${{ github.repository }}
+        GITHUB_REF: ${{ github.ref }}
+    -
+      name: Set up QEMU
+      uses: docker/setup-qemu-action@v1
+    -
+      name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+    -
+      name: Cache Docker layers
+      uses: actions/cache@v2
+      with:
+        path: /tmp/.buildx-cache
+        key: ${{ runner.os }}-buildx-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-buildx-
+    -
+      name: Login to GitHub Container Registry
+      uses: docker/login-action@v1
+      with:
+        registry: ghcr.io
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GHCR_PAT }}
+    -
+      name: Build and push
+      uses: docker/build-push-action@v2
+      with:
+        push: true
+        file: ${{ inputs.dockerfile }}
+        tags: ghcr.io/${{ inputs.target != '' &&  inputs.target || steps.name.outputs.image }}:${{ steps.name.outputs.tag }}
+        build-args: |
+          CRYSTAL_VERSION=${{ inputs.crystal_version }}
+          TARGET=${{ inputs.target != '' &&  inputs.target || steps.name.outputs.image }}
+        cache-from: type=local,src=/tmp/.buildx-cache
+        cache-to: type=local,dest=/tmp/.buildx-cache
+        labels: |
+          org.opencontainers.image.url=https://github.com/${{ github.repository }}
+          org.opencontainers.image.source=https://github.com/${{ github.repository }}/tree/${{ github.ref }}
+          org.opencontainers.image.revision=${{ github.sha }}
+          org.opencontainers.image.vendor=Place Technology Limited
