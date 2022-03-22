@@ -33,11 +33,10 @@ jobs:
             version: ${{ needs.version.outputs.version }}
           EOF
       - name: Validate PR title with commitizen
-        continue-on-error: true
         run: |
           cz check -m "${{ github.event.pull_request.title }}"
       - uses: mshick/add-pr-comment@v1
-        if: ${{ failure() }}
+        if: failure()
         with:
           message: |
             Hey, your PR is titled `${{ github.event.pull_request.title }}`.
