@@ -1,5 +1,4 @@
 name: Conventional Labels
-
 on:
   workflow_call:
 
@@ -8,7 +7,7 @@ jobs:
     name: Label
     runs-on: ubuntu-latest
     steps:
-      - uses: bcoe/conventional-release-labels@v1
+      - uses: bcoe/conventional-release-labels@v1.3.0
         with:
           type_labels:
             build: 'type: maintenance'
