@@ -9,12 +9,14 @@ jobs:
     steps:
       - uses: bcoe/conventional-release-labels@v1.3.0
         with:
-          type_labels:
-            build: 'type: maintenance'
-            chore: 'type: chore'
-            ci: 'type: devops'
-            docs: 'type: documentation'
-            feat: 'type: enhancement'
-            fix: 'type: bug'
-            refactor: 'type: refactor'
-          ignored_types: []
+          type_labels: |
+            {
+              "build": "type: maintenance",
+              "chore": "type: chore",
+              "ci": "type: devops",
+              "docs": "type: documentation",
+              "feat": "type: enhancement",
+              "fix": "type: bug",
+              "refactor": "type: refactor"
+            }
+          ignored_types: '[]'
