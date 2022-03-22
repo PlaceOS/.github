@@ -3,21 +3,7 @@ on:
   workflow_call:
 
 jobs:
-  version:
-    runs-on: ubuntu-latest
-    container: crystallang/crystal
-    outputs:
-      version: ${{ steps.shards.outputs.version }}
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-          token: "${{ secrets.GITHUB_TOKEN }}"
-      - id: shards
-        run: echo "::set-output name=version::$(shards version)"
-
   validate:
-    needs: version
     if: "!startsWith(github.event.head_commit.message, 'bump:')"
     runs-on: ubuntu-latest
     container: commitizen/commitizen:2
@@ -26,11 +12,13 @@ jobs:
         with:
           fetch-depth: 0
           token: "${{ secrets.GITHUB_TOKEN }}"
+      - id: shards
+        run: echo "::set-output name=version::$(shards version)"
       - run: |
           cat << EOF > .cz.yaml
           commitizen:
             tag_format: v$version
-            version: ${{ needs.version.outputs.version }}
+            version: ${{ steps.shards.outputs.version }}
           EOF
       - name: Validate PR title with commitizen
         run: |
