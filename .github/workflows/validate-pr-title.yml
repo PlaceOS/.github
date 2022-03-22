@@ -34,7 +34,7 @@ jobs:
           EOF
       - name: Validate PR title with commitizen
         run: |
-          cz check -m "${{ github.event.pull_request.title }}"
+          cz check -m '${{ github.event.pull_request.title }}'
       - uses: mshick/add-pr-comment@v1
         if: failure()
         with:
