@@ -1,0 +1,21 @@
+name: Conventional Labels
+
+on:
+  workflow_call:
+
+jobs:
+  label:
+    name: Label
+    runs-on: ubuntu-latest
+    steps:
+      - uses: bcoe/conventional-release-labels@v1
+        with:
+          type_labels:
+            build: 'type: maintenance'
+            chore: 'type: chore'
+            ci: 'type: devops'
+            docs: 'type: documentation'
+            feat: 'type: enhancement'
+            fix: 'type: bug'
+            refactor: 'type: refactor'
+          ignored_types: []
