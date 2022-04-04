@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Lint ${{ inputs.dockerfile }}
-        uses: hadolint/hadolint-action@v2.0.0
+        uses: hadolint/hadolint-action@v2.1.0
         with:
           # DL3018 Allow unpinned packages
           # SC2016 Ignore single-quotes (expansion not desired)
