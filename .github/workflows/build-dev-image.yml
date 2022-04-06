@@ -63,6 +63,7 @@ jobs:
         build-args: |
           CRYSTAL_VERSION=${{ inputs.crystal_version }}
           TARGET=${{ inputs.target != '' &&  inputs.target || steps.name.outputs.image }}
+        no-cache: true
         cache-from: type=gha
         cache-to: type=gha,mode=max
         labels: |
