@@ -35,11 +35,12 @@ jobs:
       matrix:
         crystal:
           - 1.3.2
+          - 1.4.0
         MT: [false]
         canary: [false]
         stable: [true]
         include:
-          - crystal: 1.3.2
+          - crystal: 1.4.0
             canary: false
             MT: true
             stable: false
@@ -51,7 +52,7 @@ jobs:
             canary: false
             stable: false
             MT: true
-          - crystal: 1.3.2
+          - crystal: 1.4.0
             canary: true
             MT: true
             stable: false
