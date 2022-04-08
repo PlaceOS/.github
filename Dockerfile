@@ -73,6 +73,8 @@ RUN apk upgrade --no-cache apk \
         iputils \
         libelf \
         libssh2-static \
+        lz4-dev \
+        lz4-static \
         yaml-static \
     && \
     apk add --no-cache -X http://dl-cdn.alpinelinux.org/alpine/edge/testing \
