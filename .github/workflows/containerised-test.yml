@@ -34,12 +34,12 @@ jobs:
       fail-fast: false
       matrix:
         crystal:
-          - 1.4.0
+          - 1.4.1
         MT: [false]
         canary: [false]
         stable: [true]
         include:
-          - crystal: 1.4.0
+          - crystal: 1.4.1
             canary: false
             MT: true
             stable: false
@@ -51,7 +51,7 @@ jobs:
             canary: false
             stable: false
             MT: true
-          - crystal: 1.4.0
+          - crystal: 1.4.1
             canary: true
             MT: true
             stable: false
@@ -82,7 +82,7 @@ jobs:
           key: ${{ hashFiles('shard.lock') }}
       - name: ${{ matrix.canary && 'Update' || 'Install' }} shards
         if: ${{ matrix.canary || !inputs.cache_shards || steps.cache-shards.outputs.cache-hit != 'true' }}
-        run: shards ${{ matrix.canary && 'update' || 'install' }} --ignore-crystal-version
+        run: shards ${{ matrix.canary && 'update' || 'install' }}
       - name: shard.lock diff
         if: ${{ matrix.canary }}
         id: diff
