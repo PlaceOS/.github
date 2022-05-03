@@ -94,7 +94,7 @@ jobs:
         run: git diff shard.lock
       - name: Run docker-compose test environment
         if: ${{ !matrix.canary || steps.diff.outputs.any_changed }}
-        timeout-minutes: 25
+        timeout-minutes: 15
         run: ./test ${{ matrix.MT && '-Dpreview_mt' || '' }} --order random
         env:
           CRYSTAL_VERSION: ${{ matrix.crystal }}
