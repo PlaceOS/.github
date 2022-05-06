@@ -14,11 +14,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Lint ${{ inputs.dockerfile }}
-        uses: hadolint/hadolint-action@v1.6.0
+        uses: hadolint/hadolint-action@v2.1.0
         with:
           # DL3018 Allow unpinned packages
-          # SC2016 Ignore single-quotes (expansion not desired)
-          # SC1072 This one seems spurious (related to `for` syntax)
           # DL3059 It's fine to have multiple consecutive runs
-          ignore: DL3018 SC2016 SC1072 DL3059
+          # SC1072 This one seems spurious (related to `for` syntax)
+          # SC2016 Ignore single-quotes (expansion not desired)
+          ignore: 'DL3018,DL3059,SC1072,SC2016'
           dockerfile: ${{ inputs.dockerfile }}
