@@ -69,7 +69,7 @@ jobs:
           # Replace PR references (e.g. "#1") with links to their PR on GitHub
           sed -E -i \
             "s/#([0-9]+)/[#\1]\(https:\/\/github.com\/${escaped_repository}\/pull\/\1)/g" \
-            CHANGELOG.md 
+            CHANGELOG.md
 
           # Commit changes
           git commit -m "docs(CHANGELOG): update for ${{ github.sha }}" CHANGELOG.md \

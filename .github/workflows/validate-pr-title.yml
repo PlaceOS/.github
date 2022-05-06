@@ -21,8 +21,10 @@ jobs:
             version: ${{ steps.shards.outputs.version }}
           EOF
       - name: Validate PR title with commitizen
+        env:
+          PULL_REQUEST_TITLE: ${{  github.event.pull_request.title  }}
         run: |
-          cz check -m '${{ github.event.pull_request.title }}'
+          cz check -m "${PULL_REQUEST_TITLE}"
       - uses: mshick/add-pr-comment@v1
         if: failure()
         with:

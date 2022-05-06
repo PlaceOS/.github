@@ -70,7 +70,7 @@ jobs:
       name: Load images
       run:  |
         for version in *; do
-          docker load --input $version/image.tar |
+          docker load --input "$version/image.tar" |
           awk '{print $NF}' | xargs docker inspect
         done
     -

@@ -34,8 +34,9 @@ jobs:
       name: Extract names
       id: name
       run: |
-        echo ::set-output name=image::${GITHUB_REPOSITORY,,}
-        echo ::set-output name=tag::$(echo ${GITHUB_REF#refs/heads/} | sed 's/[^[:alnum:]\.\_\-]/-/g')
+        echo "::set-output name=image::${GITHUB_REPOSITORY,,}"
+        # shellcheck disable=2001
+        echo "::set-output name=tag::$(sed 's/[^[:alnum:]\.\_\-]/-/g' <<<"${GITHUB_REF#refs/heads/}")"
       env:
         GITHUB_REPOSITORY: ${{ github.repository }}
         GITHUB_REF: ${{ github.ref }}
@@ -50,7 +51,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: /tmp/.buildx-cache
-        key: ${{ matrix.crystal }}-${{ github.sha }}
+        key: ${{ inputs.crystal_version }}-${{ github.sha }}
     -
       name: Login to GitHub Container Registry
       uses: docker/login-action@v1
