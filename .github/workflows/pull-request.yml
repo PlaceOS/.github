@@ -14,6 +14,7 @@ on:
 
 jobs:
   version:
+    name: Extract Version
     runs-on: ubuntu-latest
     container: crystallang/crystal
     outputs:
@@ -23,9 +24,16 @@ jobs:
         with:
           fetch-depth: 0
       - id: shards
-        run: echo "::set-output name=version::$(shards version)"
+        run: |
+          if [[ -f "shard.yml" ]]; then
+            echo "::set-output name=version::$(shards version)"
+          else
+            # Add insane default if no shards file
+            echo "::set-output name=version::1.0.0"
+          fi
 
   validate:
+    name: Validate Title
     needs: version
     runs-on: ubuntu-latest
     container: commitizen/commitizen:2
@@ -75,7 +83,7 @@ jobs:
           ignored_types: '[]'
 
   assign-author:
-    name: Assign PR author
+    name: Assign Author
     runs-on: ubuntu-latest
     steps:
       - name: Assign author to PR
