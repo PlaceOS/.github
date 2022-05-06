@@ -1,4 +1,5 @@
 #! /usr/bin/env bash
+# shellcheck disable=2016,2086
 
 set -eu
 
