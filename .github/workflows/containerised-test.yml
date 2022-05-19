@@ -73,7 +73,7 @@ jobs:
         with:
           fetch-depth: 0
       - uses: actions/cache@v3
-        if: ${{ inputs.cache_shards }}
+        if: ${{ inputs.cache_shards == 'true' }}
         id: cache-shards
         with:
           path: |
@@ -81,7 +81,7 @@ jobs:
             bin
           key: ${{ hashFiles('shard.lock') }}
       - name: ${{ matrix.canary && 'Update' || 'Install' }} shards
-        if: ${{ matrix.canary || !inputs.cache_shards || steps.cache-shards.outputs.cache-hit != 'true' }}
+        if: ${{ matrix.canary || (inputs.cache_shards == 'true' && steps.cache-shards.outputs.cache-hit != 'true') }}
         run: shards ${{ matrix.canary && 'update' || 'install' }}
       - name: shard.lock diff
         if: ${{ matrix.canary }}
