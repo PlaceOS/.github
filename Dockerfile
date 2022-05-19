@@ -1,4 +1,4 @@
-ARG CRYSTAL_VERSION=1.3.2
+ARG CRYSTAL_VERSION=1.4.1
 
 # Build kcov
 ###############################################################################
@@ -91,9 +91,8 @@ ENV USER=appuser
 RUN adduser \
     --disabled-password \
     --gecos "" \
-    --home "/nonexistent" \
-    --shell "/sbin/nologin" \
-    --no-create-home \
+    --home "/app" \
+    --shell "/bin/bash" \
     --uid "${UID}" \
     "${USER}"
 
