@@ -81,8 +81,13 @@ jobs:
             bin
           key: ${{ hashFiles('shard.lock') }}
       - name: ${{ matrix.canary && 'Update' || 'Install' }} shards
+        shell: bash
         if: ${{ matrix.canary || (inputs.cache_shards == 'true' && steps.cache-shards.outputs.cache-hit != 'true') }}
-        run: shards ${{ matrix.canary && 'update' || 'install' }}
+        run: |
+          shards ${{ matrix.canary && 'update' || 'install' }}
+          if [[ "${{ inputs.cache_shards }}"  == 'false' ]]; then
+            rm -r lib bin
+          fi
       - name: shard.lock diff
         if: ${{ matrix.canary }}
         id: diff
