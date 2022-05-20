@@ -6,6 +6,10 @@ on:
         description: 'Whether or not to cache shards'
         type: boolean
         default: true
+      test_mt:
+        description: 'Test Multithreading'
+        type: boolean
+        default: true
       first_commit:
         description: 'Commit to force creation of TODOs'
         type: string
@@ -100,6 +104,6 @@ jobs:
       - name: Run docker-compose test environment
         if: ${{ !matrix.canary || steps.diff.outputs.any_changed }}
         timeout-minutes: 15
-        run: ./test ${{ matrix.MT && '-Dpreview_mt' || '' }} --order random
+        run: ./test ${{ (matrix.MT && inputs.test_mt == 'true' ) && '-Dpreview_mt' || '' }} --order random
         env:
           CRYSTAL_VERSION: ${{ matrix.crystal }}
