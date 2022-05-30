@@ -13,7 +13,7 @@ jobs:
       - name: Run `crystal docs`
         run: crystal docs
       - name: Publish to GitHub Pages
-        uses: crazy-max/ghaction-github-pages@v2
+        uses: crazy-max/ghaction-github-pages@v3
         with:
           target_branch: docs
           build_dir: docs
