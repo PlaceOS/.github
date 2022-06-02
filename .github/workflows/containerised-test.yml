@@ -102,7 +102,7 @@ jobs:
         if: ${{ matrix.canary && steps.diff.outputs.any_changed }}
         run: git diff shard.lock
       - name: Run docker-compose test environment
-        if: ${{ (!matrix.canary || steps.diff.outputs.any_changed == 'true') && (inputs.test_mt == 'true' || (inputs.test_mt == 'false' && matrix.MT == 'false'))}}
+        if: ${{ (!matrix.canary || (matrix.canary && steps.diff.outputs.any_changed == 'true')) && (inputs.test_mt == 'true' || (inputs.test_mt == 'false' && !matrix.MT ))}}
         timeout-minutes: 15
         run: ./test ${{ matrix.MT && '-Dpreview_mt' || '' }} --order random
         env:
