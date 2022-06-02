@@ -1,6 +1,9 @@
 name: Containerised Crystal Spec
 on:
   workflow_call:
+    secrets:
+      CR_PAT:
+        required: false
     inputs:
       cache_shards:
         description: 'Whether or not to cache shards'
@@ -18,10 +21,6 @@ on:
         description: 'Whether or not to convert found TODOs to issues'
         type: boolean
         default: false
-      CR_PAT:
-        description: 'Container Registry Personal Access Token'
-        type: string
-        default: ''
 
 jobs:
   todo-issues:
@@ -118,4 +117,4 @@ jobs:
           ./test ${{ matrix.MT && '-Dpreview_mt' || '' }} --order random
         env:
           CRYSTAL_VERSION: ${{ matrix.crystal }}
-          CR_PAT: ${{ inputs.CR_PAT }}
+          CR_PAT: ${{ secrets.CR_PAT }}
