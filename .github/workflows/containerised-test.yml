@@ -18,6 +18,10 @@ on:
         description: 'Whether or not to convert found TODOs to issues'
         type: boolean
         default: false
+      CR_PAT:
+        description: 'Container Registry Personal Access Token'
+        type: string
+        default: ''
 
 jobs:
   todo-issues:
@@ -104,6 +108,14 @@ jobs:
       - name: Run docker-compose test environment
         if: ${{ (!matrix.canary || (matrix.canary && steps.diff.outputs.any_changed == 'true')) && (inputs.test_mt || (!inputs.test_mt && !matrix.MT ))}}
         timeout-minutes: 15
-        run: ./test ${{ matrix.MT && '-Dpreview_mt' || '' }} --order random
+        run: |
+          # Login to GHCR if access token in scope
+          if [[ -n "${CR_PAT}" ]]; then
+            echo "${CR_PAT}" | docker login ghcr.io -u placeos-robot --password-stdin
+          fi
+
+          # Run tests!
+          ./test ${{ matrix.MT && '-Dpreview_mt' || '' }} --order random
         env:
           CRYSTAL_VERSION: ${{ matrix.crystal }}
+          CR_PAT: ${{ inputs.CR_PAT }}
