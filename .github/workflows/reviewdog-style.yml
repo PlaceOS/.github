@@ -5,7 +5,9 @@ on:
     branches:
       - main
       - master
+
   pull_request:
+
   workflow_dispatch:
 
 jobs:
@@ -44,9 +46,9 @@ jobs:
     name: runner / actionlint
     needs: reporter
     runs-on: ubuntu-latest
-   steps:
-      - uses: actions/checkout@v2
-      - uses: reviewdog/action-actionlint@v1
-        with:
-          reporter: ${{ needs.reporter.steps.reporter.outputs.value }}
-          level: warning
+    steps:
+        - uses: actions/checkout@v2
+        - uses: reviewdog/action-actionlint@v1
+          with:
+            reporter: ${{ needs.reporter.steps.reporter.outputs.value }}
+            level: warning

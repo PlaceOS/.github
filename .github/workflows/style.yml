@@ -4,4 +4,4 @@ on:
 
 jobs:
   dockerfile-style:
-    uses: .github/workflows/dockerfile-style.yml@main
+    uses: PlaceOS/.github/.github/workflows/dockerfile-style.yml@main
