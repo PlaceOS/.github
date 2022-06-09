@@ -3,6 +3,7 @@ on:
   workflow_call:
     secrets:
       CR_PAT:
+        description: 'Personal Access Token for an upstream container registry'
         required: false
     inputs:
       cache_shards:
@@ -34,8 +35,23 @@ jobs:
           AUTO_ASSIGN: true # Assign issue to whoever wrote the todo
           BEFORE: ${{ inputs.first_commit }}
 
+  diff:
+    name: "Diff"
+    runs-on: ubuntu-latest
+    outputs:
+      files-changed: ${{ steps.diff.outputs.any_changed }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: shard.lock diff
+        id: diff
+        uses: tj-actions/changed-files@v22.2
+        with:
+          files: shard.lock
+
   test:
     name: "${{ !matrix.stable && '🚧 ' || '' }}crystal: ${{ matrix.crystal }}, MT: ${{ matrix.MT && '☑' || '☐' }}, canary: ${{ matrix.canary && '☑' || '☐' }}"
+    if: ${{ (!matrix.canary || (matrix.canary && needs.diff.outputs.files-changed == 'true')) && (inputs.test_mt || (!inputs.test_mt && !matrix.MT ))}}
+    needs: diff
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -95,17 +111,10 @@ jobs:
           if [[ "${{ inputs.cache_shards }}"  == 'false' ]]; then
             rm -r lib bin
           fi
-      - name: shard.lock diff
-        if: ${{ matrix.canary }}
-        id: diff
-        uses: tj-actions/changed-files@v22.2
-        with:
-          files: shard.lock
       - name: Render shard.lock diff
-        if: ${{ matrix.canary && steps.diff.outputs.any_changed }}
+        if: ${{ matrix.canary && needs.diff.outputs.files-changed == 'true' }}
         run: git diff shard.lock
       - name: Run docker-compose test environment
-        if: ${{ (!matrix.canary || (matrix.canary && steps.diff.outputs.any_changed == 'true')) && (inputs.test_mt || (!inputs.test_mt && !matrix.MT ))}}
         timeout-minutes: 15
         run: |
           # Login to GHCR if access token in scope
