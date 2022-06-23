@@ -1,0 +1,91 @@
+name: Pull Request
+
+on:
+  workflow_call:
+    inputs:
+      title:
+        description: The PR Title
+        required: true
+        type: string
+      opened:
+        description: Was the PR opened?
+        required: true
+        type: boolean
+
+jobs:
+  version:
+    name: Extract Version
+    runs-on: ubuntu-latest
+    container: crystallang/crystal
+    outputs:
+      version: ${{ steps.shards.outputs.version }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - id: shards
+        run: |
+          if [[ -f "shard.yml" ]]; then
+            echo "::set-output name=version::$(shards version)"
+          else
+            # Add insane default if no shards file
+            echo "::set-output name=version::1.0.0"
+          fi
+
+  validate:
+    name: Validate Title
+    needs: version
+    runs-on: ubuntu-latest
+    container: commitizen/commitizen:2
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - run: |
+          cat << EOF > .cz.yaml
+          commitizen:
+            tag_format: v$version
+            version: ${{ needs.version.outputs.version }}
+          EOF
+      - name: Validate PR title with commitizen
+        env:
+          PULL_REQUEST_TITLE: ${{ inputs.title }}
+        run: |
+          cz check -m "${PULL_REQUEST_TITLE}"
+      - uses: mshick/add-pr-comment@v1
+        if: failure()
+        with:
+          message: |
+            Hey, your PR is titled `${{ inputs.title }}`.
+            This is not a valid [conventional commit](https://www.conventionalcommits.org/).
+            Since we use well-formed PR titles for our changelogs, not fixing this can introduce problems :'(
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          repo-token-user-login: 'robots@placeos.com'
+          allow-repeats: false
+
+  label:
+    name: Label
+    runs-on: ubuntu-latest
+    steps:
+      - uses: place-labs/conventional-release-labels@main
+        with:
+          type_labels: |
+            {
+              "build": "type: maintenance",
+              "chore": "type: chore",
+              "ci": "focus: devops",
+              "docs": "type: documentation",
+              "feat": "type: enhancement",
+              "fix": "type: bug",
+              "refactor": "type: refactor"
+            }
+          ignored_types: '[]'
+
+  assign-author:
+    name: Assign Author
+    runs-on: ubuntu-latest
+    steps:
+      - name: Assign author to PR
+        if: inputs.opened
+        uses: technote-space/assign-author@v1

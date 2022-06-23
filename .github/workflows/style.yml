@@ -1,0 +1,7 @@
+name: Lints
+on:
+  push:
+
+jobs:
+  dockerfile-style:
+    uses: PlaceOS/.github/.github/workflows/dockerfile-style.yml@main

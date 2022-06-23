@@ -1,4 +1,4 @@
-ARG CRYSTAL_VERSION=1.3.2
+ARG CRYSTAL_VERSION=1.4.1
 
 # Build kcov
 ###############################################################################
@@ -56,7 +56,9 @@ RUN git clone --depth=1 https://github.com/Vici37/crystal-kcov
 WORKDIR /app/crystal-kcov
 RUN shards build && \
     mv bin/crkcov /usr/bin/crkcov
+
 WORKDIR /app
+
 RUN rm -rf crystal-kcov
 
 # Set the commit through a build arg
@@ -83,6 +85,22 @@ RUN apk upgrade --no-cache apk \
     update-ca-certificates
 
 COPY test-scripts /app/scripts
+
+# Create a non-privileged user
+# ARG IMAGE_UID="10001"
+# ENV UID=$IMAGE_UID
+# ENV USER=appuser
+# RUN adduser \
+#         --disabled-password \
+#         --gecos "" \
+#         --home "/app" \
+#         --shell "/bin/bash" \
+#         --uid "${UID}" \
+#         "${USER}" \
+#     && \
+#     chown -R appuser /app
+#
+# USER appuser:appuser
 
 # These provide certificate chain validation where communicating with external services over TLS
 ENV SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt

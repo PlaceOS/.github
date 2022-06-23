@@ -13,7 +13,7 @@ on:
         default: 1.4.1
         required: false
         type: string
-      target:
+      target_image:
         description: "An optional target for repositories that specify multiple services"
         default: ""
         type: string
@@ -34,43 +34,48 @@ jobs:
       name: Extract names
       id: name
       run: |
-        echo ::set-output name=image::${GITHUB_REPOSITORY,,}
-        echo ::set-output name=tag::$(echo ${GITHUB_REF#refs/heads/} | sed 's/[^[:alnum:]\.\_\-]/-/g')
+        echo "::set-output name=image::${GITHUB_REPOSITORY,,}"
+        # shellcheck disable=2001
+        echo "::set-output name=tag::$(sed 's/[^[:alnum:]\.\_\-]/-/g' <<<"${GITHUB_REF#refs/heads/}")"
+
+        # Remove the organisation prefix
+        echo "::set-output name=build-target::${TARGET#*/}"
       env:
         GITHUB_REPOSITORY: ${{ github.repository }}
         GITHUB_REF: ${{ github.ref }}
+        TARGET: ${{ inputs.target_image != '' &&  inputs.target_image || steps.name.outputs.image }}
     -
       name: Set up QEMU
-      uses: docker/setup-qemu-action@v1
+      uses: docker/setup-qemu-action@v2
     -
       name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v1
-    -
-      name: Set up docker cache
-      uses: actions/cache@v3
-      with:
-        path: /tmp/.buildx-cache
-        key: ${{ matrix.crystal }}-${{ github.sha }}
+      uses: docker/setup-buildx-action@v2
+    # -
+    #   name: Set up docker cache
+    #   uses: actions/cache@v3
+    #   with:
+    #     path: /tmp/.buildx-cache
+    #     key: ${{ inputs.crystal_version }}-${{ github.sha }}
     -
       name: Login to GitHub Container Registry
-      uses: docker/login-action@v1
+      uses: docker/login-action@v2
       with:
         registry: ghcr.io
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GHCR_PAT }}
     -
       name: Build and push
-      uses: docker/build-push-action@v2
+      uses: docker/build-push-action@v3
       with:
         context: .
         push: true
         file: ${{ inputs.dockerfile }}
-        tags: ghcr.io/${{ inputs.target != '' &&  inputs.target || steps.name.outputs.image }}:${{ steps.name.outputs.tag }}
+        tags: ghcr.io/${{ inputs.target_image != '' &&  inputs.target_image || steps.name.outputs.image }}:${{ steps.name.outputs.tag }}
         build-args: |
           CRYSTAL_VERSION=${{ inputs.crystal_version }}
-          TARGET=${{ inputs.target != '' &&  inputs.target || steps.name.outputs.image }}
-        cache-from: type=local,src=/tmp/.buildx-cache
-        cache-to: type=local,dest=/tmp/.buildx-cache
+          TARGET=${{ steps.name.outputs.build-target }}
+        # cache-from: type=local,src=/tmp/.buildx-cache
+        # cache-to: type=local,dest=/tmp/.buildx-cache
         labels: |
           org.opencontainers.image.revision=${{ github.sha }}
           org.opencontainers.image.source=https://github.com/${{ github.repository }}/tree/${{ github.ref }}

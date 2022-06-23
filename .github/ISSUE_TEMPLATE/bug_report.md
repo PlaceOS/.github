@@ -16,7 +16,7 @@ Context as relevant - e.g. PlaceOS version, browser details, driver version etc.
 **To Reproduce**
 Steps to reproduce the behavior (if known).
 
-**Expected behavior**
+**Expected behaviour**
 What did you expected to happen?
 
 **Screenshots**
