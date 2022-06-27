@@ -17,9 +17,9 @@ Context as relevant - e.g. PlaceOS version, browser details, driver version etc.
 Steps to reproduce the behavior (if known).
 
 **Expected behaviour**
-What did you expected to happen?
+What did you expect to happen?
 
-**Screenshots**
+**Screenshots or output**
 If applicable, add screenshots to help explain you see.
 
 **Additional context**
