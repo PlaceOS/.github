@@ -4,9 +4,9 @@ ARG CRYSTAL_VERSION=1.4.1
 ###############################################################################
 # using 3.12 to match the version used by crystal
 FROM alpine:3.12 as kcov
+SHELL ["/bin/ash", "-euo", "pipefail", "-c"]
 
-SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
-
+# hadolint ignore=DL3018
 RUN apk upgrade --no-cache apk \
  && apk add --update --no-cache \
     build-base \
@@ -19,6 +19,7 @@ RUN apk upgrade --no-cache apk \
 
 WORKDIR /kcov
 ENV KCOV_VERSION=40
+# hadolint ignore=DL3003
 RUN wget -q "https://github.com/SimonKagstrom/kcov/archive/v$KCOV_VERSION.tar.gz" -O - | tar xz -C ./ --strip-components 1 \
  && mkdir build \
  && cd build \
@@ -28,10 +29,12 @@ RUN wget -q "https://github.com/SimonKagstrom/kcov/archive/v$KCOV_VERSION.tar.gz
 # Test Container
 ###############################################################################
 FROM crystallang/crystal:${CRYSTAL_VERSION}-alpine as test
+SHELL ["/bin/ash", "-euo", "pipefail", "-c"]
 
 # - Add kcov dependencies
 # - Add trusted CAs for communicating with external services
 # - Add watchexec for running tests on change
+# hadolint ignore=DL3018
 RUN apk upgrade --no-cache apk \
  && apk add --update --no-cache \
     bash \
