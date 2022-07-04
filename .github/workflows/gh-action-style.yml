@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: actionlint
-        uses: reviewdog/action-actionlint@v1.25
+        uses: reviewdog/action-actionlint@v1.27
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           level: info
