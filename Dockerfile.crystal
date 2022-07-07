@@ -1,6 +1,5 @@
 # Inspired by https://github.com/84codes/crystal-container-images
 # Thanks @carlhoerberg!
-#
 # License: MIT
 
 ARG ALPINE_VERSION=latest
@@ -9,10 +8,11 @@ FROM --platform=$BUILDPLATFORM alpine:edge AS builder
 
 ARG LLVM_VERSION=14
 
-# add dependencies required for building crystal from source
+# Add dependencies required for building crystal from source
+# hadolint ignore=DL3018
 RUN apk add --update --no-cache \
     crystal shards \
-    llvm${LLVM_VERSION}-dev llvm${LLVM_VERSION}-static \
+    "llvm${LLVM_VERSION}-dev" "llvm${LLVM_VERSION}-static" \
     zlib-static yaml-static libxml2-dev pcre-dev libevent-static \
     libffi-dev git g++ make automake libtool autoconf curl
 
@@ -24,7 +24,9 @@ WORKDIR /tmp/crystal
 
 ARG CRYSTAL_VERSION=1.5.0
 
-RUN curl --retry 5 -sL https://github.com/crystal-lang/crystal/archive/refs/tags/${CRYSTAL_VERSION}.tar.gz | \
+SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
+
+RUN curl --retry 5 -sL "https://github.com/crystal-lang/crystal/archive/refs/tags/${CRYSTAL_VERSION}.tar.gz" | \
   tar -zxf- --strip-components=1 && \
   gzip -9 man/crystal.1 && \
   mkdir .build && \
@@ -33,7 +35,9 @@ RUN curl --retry 5 -sL https://github.com/crystal-lang/crystal/archive/refs/tags
 
 # Build shards
 WORKDIR /tmp/shards
+
 ARG SHARDS_VERSION=0.17.0
+
 RUN curl --retry 5 -sL https://github.com/crystal-lang/shards/archive/refs/tags/v${SHARDS_VERSION}.tar.gz | \
   tar -zxf- --strip-components=1 && \
   gzip -9 man/shards.1 man/shard.yml.5 && \
@@ -44,19 +48,23 @@ FROM alpine:edge AS target-builder
 
 ARG LLVM_VERSION=14
 
+SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
+
+# hadolint ignore=DL3018
 RUN apk add --update --no-cache \
-    llvm${LLVM_VERSION}-dev llvm${LLVM_VERSION}-static \
+    "llvm${LLVM_VERSION}-dev" "llvm${LLVM_VERSION}-static" \
     zlib-static yaml-static libxml2-dev pcre-dev libevent-static \
     libffi-dev git g++ make automake libtool autoconf curl
 
 # Build libgc
 WORKDIR /tmp/libc
 ARG GC_VERSION=8.2.0
-RUN curl --retry 5 -sL https://github.com/ivmai/bdwgc/archive/refs/tags/v${GC_VERSION}.tar.gz | \
+
+RUN curl --retry 5 -sL "https://github.com/ivmai/bdwgc/archive/refs/tags/v${GC_VERSION}.tar.gz" | \
   tar -zxf- --strip-components=1 && \
   ./autogen.sh && \
   ./configure --disable-debug --disable-shared --enable-large-config --prefix=/usr && \
-  make -j$(nproc) CFLAGS="-DNO_GETCONTEXT -pipe -O3" && \
+  make -j"$(nproc)" CFLAGS="-DNO_GETCONTEXT -pipe -O3" && \
   make install
 
 # Link crystal
@@ -66,6 +74,7 @@ COPY --from=builder /tmp/crystal/src/llvm/ext src/llvm/ext
 COPY --from=builder /tmp/crystal/.build .build
 RUN make llvm_ext
 RUN sh -ex .build/crystal.sh && strip .build/crystal
+
 # Link shards
 WORKDIR /tmp/shards
 COPY --from=builder /tmp/shards/bin bin
@@ -74,8 +83,22 @@ RUN sh -ex bin/shards.sh && strip bin/shards
 # start from a clean image
 FROM alpine:$ALPINE_VERSION
 
-# add dependencies commonly required for building crystal applications
-RUN apk add --update --no-cache musl-dev gcc pcre-dev libevent-dev libevent-static openssl3-dev openssl3-libs-static libxml2-dev zlib-dev zlib-static git make yaml-dev
+# Add dependencies commonly required for building crystal applications
+# hadolint ignore=DL3018
+RUN apk add --update --no-cache \
+    gcc \
+    git \
+    libevent-dev \
+    libevent-static \
+    libxml2-dev \
+    make \
+    musl-dev \
+    openssl3-dev \
+    openssl3-libs-static \
+    pcre-dev \
+    yaml-dev \
+    zlib-dev \
+    zlib-static
 
 # copy the binaries + stdlib + libgc from the build stage
 COPY --from=builder /tmp/crystal/*.md /usr/share/doc/crystal/

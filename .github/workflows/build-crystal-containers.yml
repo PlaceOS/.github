@@ -42,6 +42,7 @@ jobs:
       id:   build
       uses: docker/build-push-action@v3
       with:
+        file: Dockerfile.crystal
         build-args: |
           CRYSTAL_VERSION=${{ matrix.crystal }}
           LLVM_VERSION=${{ env.LLVM_VERSION }}
