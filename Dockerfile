@@ -4,85 +4,71 @@ ARG CRYSTAL_VERSION=1.4.1
 ###############################################################################
 # using 3.12 to match the version used by crystal
 FROM alpine:3.12 as kcov
+SHELL ["/bin/ash", "-euo", "pipefail", "-c"]
 
-SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
-
-RUN apk update && \
-    apk add --no-cache \
-    curl \
+# hadolint ignore=DL3018
+RUN apk upgrade --no-cache apk \
+ && apk add --update --no-cache \
+    build-base \
     cmake \
-    make \
-    gcc \
-    g++ \
+    ninja \
+    python3 \
     binutils-dev \
-    zlib-dev \
     curl-dev \
-    elfutils-dev \
-    python3
+    elfutils-dev
 
 WORKDIR /kcov
-ENV KCOV_VERSION=40 CXXFLAGS="-D__ptrace_request=int"
-RUN mkdir -p kcov-$KCOV_VERSION/build bin && \
-    curl --location https://github.com/SimonKagstrom/kcov/archive/v$KCOV_VERSION.tar.gz \
-    | tar xzC ./ && \
-    cd kcov-$KCOV_VERSION/build && \
-    cmake \
-    -Wno-dev \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_INSTALL_PREFIX=/local \
-    .. && \
-    make --jobs 2 || exit 1 && \
-    make install DESTDIR=/usr || exit 1
-
-# Extract binary dependencies
-RUN for binary in "/usr/local/bin/kcov"; do \
-        ldd "$binary" | \
-        tr -s '[:blank:]' '\n' | \
-        grep '^/' | \
-        xargs -I % sh -c 'mkdir -p $(dirname deps%); cp % deps%;'; \
-    done
+ENV KCOV_VERSION=40
+# hadolint ignore=DL3003
+RUN wget -q "https://github.com/SimonKagstrom/kcov/archive/v$KCOV_VERSION.tar.gz" -O - | tar xz -C ./ --strip-components 1 \
+ && mkdir build \
+ && cd build \
+ && CXXFLAGS="-D__ptrace_request=int" cmake -G Ninja .. \
+ && cmake --build . --target install
 
 # Test Container
 ###############################################################################
 FROM crystallang/crystal:${CRYSTAL_VERSION}-alpine as test
+SHELL ["/bin/ash", "-euo", "pipefail", "-c"]
+
+# - Add kcov dependencies
+# - Add trusted CAs for communicating with external services
+# - Add watchexec for running tests on change
+# hadolint ignore=DL3018
+RUN apk upgrade --no-cache apk \
+ && apk add --update --no-cache \
+    bash \
+    python3 \
+    binutils-dev \
+    curl-dev \
+    elfutils-libelf \
+    ca-certificates \
+    curl \
+    iputils \
+    libelf \
+    libssh2-static \
+    lz4-dev \
+    lz4-static \
+    yaml-static \
+ && apk add --no-cache -X http://dl-cdn.alpinelinux.org/alpine/edge/testing \
+    watchexec \
+ && update-ca-certificates
 
 # Add kcov
-COPY --from=kcov /kcov/deps /
-COPY --from=kcov /usr/local/bin/kcov /usr/bin/kcov
+COPY --from=kcov /usr/local/bin/kcov* /usr/local/bin/
+COPY --from=kcov /usr/local/share/doc/kcov /usr/local/share/doc/kcov
 
-# Build crystal kcov tool
+# Build crystal-coverage tool
+WORKDIR /crystal-coverage
+RUN git clone --depth=1 https://github.com/lbguilherme/crystal-coverage . \
+ && shards build --production --release \
+ && mv bin/crystal-coverage /usr/bin/
+
 WORKDIR /app
-RUN git clone --depth=1 https://github.com/Vici37/crystal-kcov
-WORKDIR /app/crystal-kcov
-RUN shards build && \
-    mv bin/crkcov /usr/bin/crkcov
-
-WORKDIR /app
-
-RUN rm -rf crystal-kcov
+RUN rm -rf /crystal-coverage
 
 # Set the commit through a build arg
 ARG PLACE_COMMIT="DEV"
-
-# - Add trusted CAs for communicating with external services
-# - Add watchexec for running tests on change
-RUN apk upgrade --no-cache apk \
-    && \
-    apk add --no-cache \
-        bash \
-        ca-certificates \
-        curl \
-        iputils \
-        libelf \
-        libssh2-static \
-        lz4-dev \
-        lz4-static \
-        yaml-static \
-    && \
-    apk add --no-cache -X http://dl-cdn.alpinelinux.org/alpine/edge/testing \
-        watchexec \
-    && \
-    update-ca-certificates
 
 COPY test-scripts /app/scripts
 

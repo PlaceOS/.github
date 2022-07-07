@@ -22,7 +22,26 @@ on:
         type: boolean
         default: false
 
+env:
+  CRYSTAL_VERSION: 1.4.1
+
 jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run docker-compose test environment
+        run: ./test --coverage
+        timeout-minutes: 25
+        env:
+          CRYSTAL_VERSION: ${{ env.CRYSTAL_VERSION }}
+      - name: Upload coverage report
+        if: ${{ always() }}
+        uses: codecov/codecov-action@v2
+        with:
+          directory: coverage
+          fail_ci_if_error: true
+
   todo-issues:
     if: ${{ inputs.todo_issues }}
     name: TODOs → GitHub Issues
