@@ -20,17 +20,29 @@ jobs:
   build:
     strategy:
       matrix:
-        crystal:
-          - 1.4.1
-          - 1.5.0
-          - latest
-          - nightly
+        crystal_ref:
+          - tags/1.4.1
+          - tags/1.5.0
+          - heads/main
     runs-on: ubuntu-latest
     name: Build ${{ matrix.crystal }}
     steps:
     -
       name: Checkout local actions and scripts
       uses: actions/checkout@v3
+    -
+      name: Extract version
+      id: version
+      run: |
+        version=${REF#refs/*/}
+
+        if [[ $version == "master" ]]; then
+          version="nightly"
+        fi
+
+        echo ::set-output name=version::$version
+      env:
+        REF: ${ matrix.crystal_ref }
     -
       name: Set up QEMU
       uses: docker/setup-qemu-action@v2
@@ -44,13 +56,13 @@ jobs:
       with:
         file: Dockerfile.crystal
         build-args: |
-          CRYSTAL_VERSION=${{ matrix.crystal }}
+          CRYSTAL_REF=${{ matrix.crystal_ref }}
           LLVM_VERSION=${{ env.LLVM_VERSION }}
           GC_VERSION=${{ env.GC_VERSION }}
         outputs: type=docker,dest=image.tar
-        cache-from: type=gha,scope=${{ matrix.crystal }}
-        cache-to: type=gha,scope=${{ matrix.crystal }},mode=max
-        tags: ${{ env.IMAGE_NAME }}:${{ matrix.crystal }}
+        cache-from: type=gha,scope=${{ matrix.crystal_ref }}
+        cache-to: type=gha,scope=${{ matrix.crystal_ref }},mode=max
+        tags: ${{ env.IMAGE_NAME }}:${{ steps.version.outputs.version }}
         labels: |
           org.opencontainers.image.url=https://github.com/PlaceOS/.github
           org.opencontainers.image.vendor=Place Technology Limited
@@ -59,7 +71,7 @@ jobs:
       name: Upload artifact
       uses: actions/upload-artifact@v3
       with:
-        name: ${{ matrix.crystal }}
+        name: ${{ steps.version.outputs.version }}
         path: image.tar
 
   publish:

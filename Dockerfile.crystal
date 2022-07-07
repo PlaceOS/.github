@@ -22,11 +22,11 @@ ARG TARGETARCH=x86_64
 # Build crystal
 WORKDIR /tmp/crystal
 
-ARG CRYSTAL_VERSION=1.5.0
+ARG CRYSTAL_REF=tags/1.5.0
 
 SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 
-RUN curl --retry 5 -sL "https://github.com/crystal-lang/crystal/archive/refs/tags/${CRYSTAL_VERSION}.tar.gz" | \
+RUN curl --retry 5 -sL "https://github.com/crystal-lang/crystal/archive/refs/${CRYSTAL_REF}.tar.gz" | \
   tar -zxf- --strip-components=1 && \
   gzip -9 man/crystal.1 && \
   mkdir .build && \
