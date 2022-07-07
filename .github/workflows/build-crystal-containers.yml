@@ -25,7 +25,7 @@ jobs:
           - tags/1.5.0
           - heads/master
     runs-on: ubuntu-latest
-    name: Build ${{ matrix.crystal }}
+    name: ${{ matrix.crystal_ref }}
     steps:
     -
       name: Checkout local actions and scripts
