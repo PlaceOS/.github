@@ -34,7 +34,7 @@ jobs:
       name: Extract version
       id: version
       run: |
-        version=${REF#refs/*/}
+        version=${REF#*/}
 
         if [[ $version == "master" ]]; then
           version="nightly"
@@ -42,7 +42,7 @@ jobs:
 
         echo ::set-output name=version::$version
       env:
-        REF: ${ matrix.crystal_ref }
+        REF: ${{ matrix.crystal_ref }}
     -
       name: Set up QEMU
       uses: docker/setup-qemu-action@v2
