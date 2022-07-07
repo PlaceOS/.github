@@ -3,6 +3,7 @@ on:
   workflow_call:
     secrets:
       CR_PAT:
+        description: 'PAT for a container registry'
         required: false
     inputs:
       cache_shards:
