@@ -1,0 +1,89 @@
+name: Build Crystal Containers
+
+on:
+  push:
+    paths:
+      - .github/workflows/build-crystal-containers.yml
+      - Dockerfile.crystal
+
+  workflow_dispatch:
+
+  schedule:
+    - cron: '15 3 * * 1'
+
+env:
+  LLVM_VERSION: 14
+  GC_VERSION: 8.2.0
+  IMAGE_NAME: placeos/crystal
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        crystal:
+          - 1.4.1
+          - 1.5.0
+          - latest
+          - nightly
+    runs-on: ubuntu-latest
+    name: Build ${{ matrix.crystal }}
+    steps:
+    -
+      name: Checkout local actions and scripts
+      uses: actions/checkout@v3
+    -
+      name: Set up QEMU
+      uses: docker/setup-qemu-action@v2
+    -
+      name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+    -
+      name: Build image
+      id:   build
+      uses: docker/build-push-action@v3
+      with:
+        build-args: |
+          CRYSTAL_VERSION=${{ matrix.crystal }}
+          LLVM_VERSION=${{ env.LLVM_VERSION }}
+          GC_VERSION=${{ env.GC_VERSION }}
+        outputs: type=docker,dest=image.tar
+        cache-from: type=gha,scope=${{ matrix.crystal }}
+        cache-to: type=gha,scope=${{ matrix.crystal }},mode=max
+        tags: ${{ env.IMAGE_NAME }}:${{ matrix.crystal }}
+        labels: |
+          org.opencontainers.image.url=https://github.com/PlaceOS/.github
+          org.opencontainers.image.vendor=Place Technology Limited
+          org.opencontainers.image.title=Place Crystal Compiler Build
+    -
+      name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ matrix.crystal }}
+        path: image.tar
+
+  publish:
+    needs: build
+    if: contains(github.ref, 'refs/heads/main')
+    runs-on: ubuntu-latest
+    name: Publish
+    steps:
+    -
+      name: Login to DockerHub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+    -
+      name: Download service artifacts
+      uses: actions/download-artifact@v3
+    -
+      name: Load images
+      run:  |
+        for version in *; do
+          docker load --input "$version/image.tar" |
+          awk '{print $NF}' | xargs docker inspect
+        done
+    -
+      name: Publish
+      run:  |
+          docker push ${{ env.IMAGE_NAME }} --all-tags
