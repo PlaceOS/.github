@@ -1,11 +1,14 @@
 name: Build Spec Containers
 
 on:
+  workflow_dispatch:
+
   push:
     paths:
       - .github/workflows/build-spec-containers.yml
       - Dockerfile
       - test-scripts
+
   schedule:
     - cron: '15 3 * * 1'
 
