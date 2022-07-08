@@ -1,7 +1,7 @@
 # Test Container
 ###############################################################################
 
-ARG CRYSTAL_VERSION=1.4.1
+ARG CRYSTAL_VERSION=1.5.0
 FROM placeos/crystal:${CRYSTAL_VERSION} as test
 
 WORKDIR /app

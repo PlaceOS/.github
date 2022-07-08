@@ -120,14 +120,18 @@ FROM alpine:$ALPINE_VERSION
 RUN apk add --update --no-cache \
     gcc \
     git \
+    gmp-dev \
     libevent-dev \
     libevent-static \
     libxml2-dev \
     make \
     musl-dev \
-    openssl3-dev \
-    openssl3-libs-static \
+    musl-dev \
+    openssl-dev \
+    openssl-libs-static \
+    patch \
     pcre-dev \
+    tzdata \
     yaml-dev \
     zlib-dev \
     zlib-static
