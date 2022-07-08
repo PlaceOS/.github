@@ -11,10 +11,23 @@ ARG LLVM_VERSION=14
 # Add dependencies required for building crystal from source
 # hadolint ignore=DL3018
 RUN apk add --update --no-cache \
-    crystal shards \
-    "llvm${LLVM_VERSION}-dev" "llvm${LLVM_VERSION}-static" \
-    zlib-static yaml-static libxml2-dev pcre-dev libevent-static \
-    libffi-dev git g++ make automake libtool autoconf curl
+    "llvm${LLVM_VERSION}-dev" \
+    "llvm${LLVM_VERSION}-static" \
+    autoconf \
+    automake \
+    crystal \
+    curl \
+    g++ \
+    git \
+    libevent-static \
+    libffi-dev \
+    libtool \
+    libxml2-dev \
+    make \
+    pcre-dev \
+    shards \
+    yaml-static \
+    zlib-static
 
 # Cross compile for target architecture
 ARG TARGETARCH=x86_64
@@ -30,7 +43,11 @@ RUN curl --retry 5 -sL "https://github.com/crystal-lang/crystal/archive/refs/${C
   tar -zxf- --strip-components=1 && \
   gzip -9 man/crystal.1 && \
   mkdir .build && \
-  make crystal interpreter=1 release=1 target=$TARGETARCH-alpine-linux-musl PREFIX=/usr FLAGS="--no-debug" | tail -1 > .build/crystal.sh && \
+  make crystal \
+    release=1 \
+    static=1 \
+    interpreter=1 \
+    target=$TARGETARCH-alpine-linux-musl PREFIX=/usr FLAGS="--no-debug" | tail -1 > .build/crystal.sh && \
   rm src/llvm/ext/llvm_ext.o
 
 # Build shards
@@ -41,7 +58,10 @@ ARG SHARDS_VERSION=0.17.0
 RUN curl --retry 5 -sL https://github.com/crystal-lang/shards/archive/refs/tags/v${SHARDS_VERSION}.tar.gz | \
   tar -zxf- --strip-components=1 && \
   gzip -9 man/shards.1 man/shard.yml.5 && \
-  make bin/shards static=1 release=1 FLAGS="--no-debug --cross-compile --target=$TARGETARCH-alpine-linux-musl" | tail -1 > bin/shards.sh
+  make bin/shards \
+  static=1 \
+  release=1 \
+  FLAGS="--no-debug --cross-compile --target=$TARGETARCH-alpine-linux-musl" | tail -1 > bin/shards.sh
 
 # link on target platform
 FROM alpine:edge AS target-builder
@@ -52,9 +72,21 @@ SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 
 # hadolint ignore=DL3018
 RUN apk add --update --no-cache \
-    "llvm${LLVM_VERSION}-dev" "llvm${LLVM_VERSION}-static" \
-    zlib-static yaml-static libxml2-dev pcre-dev libevent-static \
-    libffi-dev git g++ make automake libtool autoconf curl
+    "llvm${LLVM_VERSION}-dev" \
+    "llvm${LLVM_VERSION}-static" \
+    autoconf \
+    automake \
+    curl \
+    g++ \
+    git \
+    libevent-static \
+    libffi-dev \
+    libtool \
+    libxml2-dev \
+    make \
+    pcre-dev \
+    yaml-static \
+    zlib-static
 
 # Build libgc
 WORKDIR /tmp/libc
@@ -110,5 +142,4 @@ COPY --from=target-builder /tmp/crystal/.build/crystal /usr/bin/
 COPY --from=target-builder /tmp/shards/bin/shards /usr/bin/
 COPY --from=target-builder /usr/lib/libgc.a /usr/lib/
 
-# set the default cmd, example usage: docker run --rm 84codes/crystal eval 'puts "hello world"'
 ENTRYPOINT ["/usr/bin/crystal"]
