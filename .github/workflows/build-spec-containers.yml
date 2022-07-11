@@ -10,7 +10,7 @@ on:
       - test-scripts
 
   schedule:
-    - cron: '15 3 * * 1'
+    - cron: '15 3 * * *'
 
 jobs:
   build:
