@@ -10,7 +10,7 @@ on:
         required: false
       crystal_version:
         description: "Crystal compiler version to build the image against"
-        default: 1.4.1
+        default: 1.5.0
         required: false
         type: string
       target_image:
