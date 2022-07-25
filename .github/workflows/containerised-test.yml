@@ -99,7 +99,7 @@ jobs:
       - name: shard.lock diff
         if: ${{ matrix.canary }}
         id: diff
-        uses: tj-actions/changed-files@v22.2
+        uses: tj-actions/changed-files@v24
         with:
           files: shard.lock
       - name: Render shard.lock diff
