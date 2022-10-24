@@ -1,149 +1,39 @@
-# Inspired by https://github.com/84codes/crystal-container-images
-# Thanks @carlhoerberg!
-# License: MIT
-
 ARG ALPINE_VERSION=latest
-
-FROM --platform=$BUILDPLATFORM alpine:edge AS builder
-
-ARG LLVM_VERSION=14
-
-# Add dependencies required for building crystal from source
-# hadolint ignore=DL3018
-RUN apk add --update --no-cache \
-    "llvm${LLVM_VERSION}-dev" \
-    "llvm${LLVM_VERSION}-static" \
-    autoconf \
-    automake \
-    crystal \
-    curl \
-    g++ \
-    git \
-    libevent-static \
-    libffi-dev \
-    libtool \
-    libxml2-dev \
-    make \
-    pcre-dev \
-    shards \
-    yaml-static \
-    zlib-static
-
-# Cross compile for target architecture
-ARG TARGETARCH=x86_64
-
-# Build crystal
-WORKDIR /tmp/crystal
-
-ARG CRYSTAL_REF=tags/1.5.0
-
-SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
-
-RUN curl --retry 5 -sL "https://github.com/crystal-lang/crystal/archive/refs/${CRYSTAL_REF}.tar.gz" | \
-  tar -zxf- --strip-components=1 && \
-  gzip -9 man/crystal.1 && \
-  mkdir .build && \
-  make crystal \
-    release=1 \
-    static=1 \
-    interpreter=1 \
-    target=$TARGETARCH-alpine-linux-musl PREFIX=/usr FLAGS="--no-debug" | tail -1 > .build/crystal.sh && \
-  rm src/llvm/ext/llvm_ext.o
-
-# Build shards
-WORKDIR /tmp/shards
-
-ARG SHARDS_VERSION=0.17.0
-
-RUN curl --retry 5 -sL https://github.com/crystal-lang/shards/archive/refs/tags/v${SHARDS_VERSION}.tar.gz | \
-  tar -zxf- --strip-components=1 && \
-  gzip -9 man/shards.1 man/shard.yml.5 && \
-  make bin/shards \
-  static=1 \
-  release=1 \
-  FLAGS="--no-debug --cross-compile --target=$TARGETARCH-alpine-linux-musl" | tail -1 > bin/shards.sh
-
-# link on target platform
-FROM alpine:edge AS target-builder
-
-ARG LLVM_VERSION=14
-
-SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
-
-# hadolint ignore=DL3018
-RUN apk add --update --no-cache \
-    "llvm${LLVM_VERSION}-dev" \
-    "llvm${LLVM_VERSION}-static" \
-    autoconf \
-    automake \
-    curl \
-    g++ \
-    git \
-    libevent-static \
-    libffi-dev \
-    libtool \
-    libxml2-dev \
-    make \
-    pcre-dev \
-    yaml-static \
-    zlib-static
-
-# Build libgc
-WORKDIR /tmp/libc
-ARG GC_VERSION=8.2.0
-
-RUN curl --retry 5 -sL "https://github.com/ivmai/bdwgc/archive/refs/tags/v${GC_VERSION}.tar.gz" | \
-  tar -zxf- --strip-components=1 && \
-  ./autogen.sh && \
-  ./configure --disable-debug --disable-shared --enable-large-config --prefix=/usr && \
-  make -j"$(nproc)" CFLAGS="-DNO_GETCONTEXT -pipe -O3" && \
-  make install
-
-# Link crystal
-WORKDIR /tmp/crystal
-COPY --from=builder /tmp/crystal/Makefile .
-COPY --from=builder /tmp/crystal/src/llvm/ext src/llvm/ext
-COPY --from=builder /tmp/crystal/.build .build
-RUN make llvm_ext
-RUN sh -ex .build/crystal.sh && strip .build/crystal
-
-# Link shards
-WORKDIR /tmp/shards
-COPY --from=builder /tmp/shards/bin bin
-RUN sh -ex bin/shards.sh && strip bin/shards
 
 # start from a clean image
 FROM alpine:$ALPINE_VERSION
 
 # Add dependencies commonly required for building crystal applications
-# hadolint ignore=DL3018
-RUN apk add --update --no-cache \
-    gcc \
+RUN apk add \
+  --update \
+  --no-cache \
+    ca-certificates \
+    yaml-dev \
+    yaml-static \
     git \
     gmp-dev \
     libevent-dev \
     libevent-static \
     libxml2-dev \
-    make \
-    musl-dev \
     musl-dev \
     openssl-dev \
     openssl-libs-static \
-    patch \
     pcre-dev \
-    tzdata \
-    yaml-dev \
     zlib-dev \
-    zlib-static
+    zlib-static \
+    tzdata \
+    curl
 
-# copy the binaries + stdlib + libgc from the build stage
-COPY --from=builder /tmp/crystal/*.md /usr/share/doc/crystal/
-COPY --from=builder /tmp/crystal/man/crystal.1.gz /usr/share/man/man1/
-COPY --from=builder /tmp/shards/man/shards.1.gz /usr/share/man/man1/
-COPY --from=builder /tmp/shards/man/shard.yml.5.gz /usr/share/man/man5/
-COPY --from=builder /tmp/crystal/src /usr/share/crystal/src
-COPY --from=target-builder /tmp/crystal/.build/crystal /usr/bin/
-COPY --from=target-builder /tmp/shards/bin/shards /usr/bin/
-COPY --from=target-builder /usr/lib/libgc.a /usr/lib/
+RUN update-ca-certificates
+
+# Add crystal lang
+# can look up packages here: https://pkgs.alpinelinux.org/packages?name=crystal
+RUN apk add \
+  --update \
+  --no-cache \
+  --repository=http://dl-cdn.alpinelinux.org/alpine/edge/main \
+  --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community \
+    crystal \
+    shards
 
 ENTRYPOINT ["/usr/bin/crystal"]
