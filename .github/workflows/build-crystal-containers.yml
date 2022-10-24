@@ -21,7 +21,7 @@ jobs:
     strategy:
       matrix:
         crystal_ref:
-          - tags/1.6.1
+          - tags/1.5.1
           - heads/master
     runs-on: ubuntu-latest
     name: ${{ matrix.crystal_ref }}
@@ -39,7 +39,7 @@ jobs:
           version="nightly"
         fi
 
-        echo ::set-output name=version::$version
+        echo "version=$version" >> $GITHUB_OUTPUT
       env:
         REF: ${{ matrix.crystal_ref }}
     -
