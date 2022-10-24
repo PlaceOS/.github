@@ -35,7 +35,7 @@ do
   esac
 done
 
-shards check --ignore-crystal-version -q &> /dev/null || shards install --ignore-crystal-version
+shards check --ignore-crystal-version -q &> /dev/null || shards install --ignore-crystal-version --skip-postinstall --skip-executables
 
 if [[ "$watch" == "true" ]]; then
   CRYSTAL_WORKERS=$(nproc) watchexec -e cr -c -r -w shard.lock -w src -w spec -- scripts/crystal-spec.sh -v $PARAMS
