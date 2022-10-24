@@ -4,6 +4,7 @@ ARG ALPINE_VERSION=latest
 FROM alpine:$ALPINE_VERSION
 
 # Add dependencies commonly required for building crystal applications
+# hadolint ignore=DL3018
 RUN apk add \
   --update \
   --no-cache \
@@ -11,6 +12,9 @@ RUN apk add \
     yaml-dev \
     yaml-static \
     git \
+    bash \
+    iputils \
+    libelf \
     gmp-dev \
     libevent-dev \
     libevent-static \
@@ -21,6 +25,9 @@ RUN apk add \
     pcre-dev \
     zlib-dev \
     zlib-static \
+    lz4-dev \
+    lz4-static \
+    libssh2-static \
     tzdata \
     curl
 
@@ -35,5 +42,8 @@ RUN apk add \
   --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community \
     crystal \
     shards
+    
+# These provide certificate chain validation where communicating with external services over TLS
+ENV SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
 
 ENTRYPOINT ["/usr/bin/crystal"]
