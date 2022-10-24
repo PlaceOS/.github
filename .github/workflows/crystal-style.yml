@@ -13,7 +13,7 @@ jobs:
       - name: Format
         run: crystal tool format --check
       - name: Lint
-        uses: crystal-ameba/github-action@v0.5.0
+        uses: crystal-ameba/github-action@v0.5.1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
