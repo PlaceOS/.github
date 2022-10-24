@@ -5,9 +5,6 @@ FROM placeos/crystal:latest as test
 
 WORKDIR /app
 
-# Set the commit through a build arg
-ARG PLACE_COMMIT="DEV"
-
 # - Add watchexec for running tests on change
 # hadolint ignore=DL3018
 RUN apk add \
