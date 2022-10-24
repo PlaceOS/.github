@@ -6,10 +6,6 @@ on:
         description: 'PAT for a container registry'
         required: false
     inputs:
-      cache_shards:
-        description: 'Whether or not to cache shards'
-        type: boolean
-        default: true
       test_mt:
         description: 'Test Multithreading'
         type: boolean
@@ -42,7 +38,7 @@ jobs:
       fail-fast: false
       matrix:
         crystal:
-          - 1.6.1
+          - latest
         MT: [false]
         canary: [false]
         stable: [true]
@@ -51,60 +47,15 @@ jobs:
             canary: false
             MT: true
             stable: false
-          - crystal: nightly
-            canary: false
-            stable: false
-            MT: false
-          - crystal: nightly
-            canary: false
-            stable: false
-            MT: true
           - crystal: latest
             canary: true
             MT: true
             stable: false
-          - crystal: nightly
-            canary: true
-            stable: false
-            MT: false
-          - crystal: nightly
-            canary: true
-            stable: false
-            MT: true
     continue-on-error: ${{ !matrix.stable }}
     steps:
-      - name: Install crystal
-        uses: crystal-lang/install-crystal@v1.7.0
-        with:
-          crystal: ${{ matrix.crystal }}
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - uses: actions/cache@v3
-        if: ${{ inputs.cache_shards == 'true' }}
-        id: cache-shards
-        with:
-          path: |
-            lib
-            bin
-          key: ${{ hashFiles('shard.lock') }}
-      - name: ${{ matrix.canary && 'Update' || 'Install' }} shards
-        shell: bash
-        if: ${{ matrix.canary || (inputs.cache_shards == 'true' && steps.cache-shards.outputs.cache-hit != 'true') }}
-        run: |
-          shards --skip-postinstall --skip-executables ${{ matrix.canary && 'update' || 'install' }}
-          if [[ "${{ inputs.cache_shards }}"  == 'false' ]]; then
-            rm -r lib bin
-          fi
-      - name: shard.lock diff
-        if: ${{ matrix.canary }}
-        id: diff
-        uses: tj-actions/changed-files@v33.0.0
-        with:
-          files: shard.lock
-      - name: Render shard.lock diff
-        if: ${{ matrix.canary && steps.diff.outputs.any_changed }}
-        run: git diff shard.lock
       - name: Run docker-compose test environment
         if: ${{ (!matrix.canary || (matrix.canary && steps.diff.outputs.any_changed == 'true')) && (inputs.test_mt || (!inputs.test_mt && !matrix.MT ))}}
         timeout-minutes: 15
