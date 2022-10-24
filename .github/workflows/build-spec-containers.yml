@@ -17,8 +17,7 @@ jobs:
     strategy:
       matrix:
         crystal:
-          - 1.4.1
-          - 1.5.0
+          - 1.6.1
           - nightly
     runs-on: ubuntu-latest
     name: Build ${{ matrix.crystal }}
