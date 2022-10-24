@@ -47,7 +47,7 @@ jobs:
         canary: [false]
         stable: [true]
         include:
-          - crystal: 1.5.0
+          - crystal: latest
             canary: false
             MT: true
             stable: false
@@ -59,7 +59,7 @@ jobs:
             canary: false
             stable: false
             MT: true
-          - crystal: 1.5.0
+          - crystal: latest
             canary: true
             MT: true
             stable: false
@@ -92,7 +92,7 @@ jobs:
         shell: bash
         if: ${{ matrix.canary || (inputs.cache_shards == 'true' && steps.cache-shards.outputs.cache-hit != 'true') }}
         run: |
-          shards ${{ matrix.canary && 'update' || 'install' }}
+          shards ${{ matrix.canary && 'update' || 'install' }} --skip-postinstall --skip-executables
           if [[ "${{ inputs.cache_shards }}"  == 'false' ]]; then
             rm -r lib bin
           fi
