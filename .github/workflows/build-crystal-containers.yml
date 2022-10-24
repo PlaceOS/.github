@@ -11,37 +11,14 @@ on:
   schedule:
     - cron: '30 1 * * *'
 
-env:
-  LLVM_VERSION: 14
-  GC_VERSION: 8.2.0
-  IMAGE_NAME: placeos/crystal
-
 jobs:
   build:
-    strategy:
-      matrix:
-        crystal_ref:
-          - tags/1.5.1
-          - heads/master
     runs-on: ubuntu-latest
-    name: ${{ matrix.crystal_ref }}
+    name: Build generic crystal image
     steps:
     -
       name: Checkout local actions and scripts
       uses: actions/checkout@v3
-    -
-      name: Extract version
-      id: version
-      run: |
-        version=${REF#*/}
-
-        if [[ $version == "master" ]]; then
-          version="nightly"
-        fi
-
-        echo "version=$version" >> $GITHUB_OUTPUT
-      env:
-        REF: ${{ matrix.crystal_ref }}
     -
       name: Set up QEMU
       uses: docker/setup-qemu-action@v2
@@ -49,53 +26,23 @@ jobs:
       name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
     -
-      name: Build image
-      id:   build
-      uses: docker/build-push-action@v3
-      with:
-        file: Dockerfile.crystal
-        build-args: |
-          CRYSTAL_REF=${{ matrix.crystal_ref }}
-          LLVM_VERSION=${{ env.LLVM_VERSION }}
-          GC_VERSION=${{ env.GC_VERSION }}
-        outputs: type=docker,dest=image.tar
-        cache-from: type=gha,scope=${{ matrix.crystal_ref }}
-        cache-to: type=gha,scope=${{ matrix.crystal_ref }},mode=max
-        tags: ${{ env.IMAGE_NAME }}:${{ steps.version.outputs.version }}
-        labels: |
-          org.opencontainers.image.url=https://github.com/PlaceOS/.github
-          org.opencontainers.image.vendor=Place Technology Limited
-          org.opencontainers.image.title=Place Crystal Compiler Build
-    -
-      name: Upload artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: ${{ steps.version.outputs.version }}
-        path: image.tar
-
-  publish:
-    needs: build
-    if: contains(github.ref, 'refs/heads/main')
-    runs-on: ubuntu-latest
-    name: Publish
-    steps:
-    -
       name: Login to DockerHub
       uses: docker/login-action@v2
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
     -
-      name: Download service artifacts
-      uses: actions/download-artifact@v3
-    -
-      name: Load images
-      run:  |
-        for version in *; do
-          docker load --input "$version/image.tar" |
-          awk '{print $NF}' | xargs docker inspect
-        done
-    -
-      name: Publish
-      run:  |
-          docker push ${{ env.IMAGE_NAME }} --all-tags
+      name: Build image
+      id:   build
+      uses: docker/build-push-action@v3
+      with:
+        file: Dockerfile.crystal
+        platforms: linux/amd64,linux/arm64
+        push: true
+        cache-from: type=gha,scope=place-crystal
+        cache-to: type=gha,scope=place-crystal,mode=max
+        tags: placeos/crystal:latest
+        labels: |
+          org.opencontainers.image.url=https://github.com/PlaceOS/.github
+          org.opencontainers.image.vendor=Place Technology Limited
+          org.opencontainers.image.title=PlaceOS Crystal Compiler Build
