@@ -42,7 +42,7 @@ jobs:
       fail-fast: false
       matrix:
         crystal:
-          - 1.5.0
+          - 1.6.1
         MT: [false]
         canary: [false]
         stable: [true]
