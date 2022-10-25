@@ -35,8 +35,10 @@ do
   esac
 done
 
-sed '/ameba/d' shard.yml
+cp ./shard.yml ./shard.yml.bak
+sed -i '/ameba/d' shard.yml
 shards check --ignore-crystal-version -q &> /dev/null || shards install
+mv ./shard.yml.bak ./shard.yml
 
 if [[ "$watch" == "true" ]]; then
   CRYSTAL_WORKERS=$(nproc) watchexec -e cr -c -r -w shard.lock -w src -w spec -- scripts/crystal-spec.sh -v $PARAMS
