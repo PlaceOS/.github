@@ -16,9 +16,10 @@ jobs:
       - name: Lint ${{ inputs.dockerfile }}
         uses: hadolint/hadolint-action@v2.1.0
         with:
+          # DL3007 ignore latest image, as we control this
           # DL3018 Allow unpinned packages
           # DL3059 It's fine to have multiple consecutive runs
           # SC1072 This one seems spurious (related to `for` syntax)
           # SC2016 Ignore single-quotes (expansion not desired)
-          ignore: 'DL3018,DL3059,SC1072,SC2016'
+          ignore: 'DL3007,DL3018,DL3059,SC1072,SC2016'
           dockerfile: ${{ inputs.dockerfile }}
