@@ -42,15 +42,6 @@ jobs:
         MT: [false]
         canary: [false]
         stable: [true]
-        include:
-          - crystal: latest
-            canary: false
-            MT: true
-            stable: false
-          - crystal: latest
-            canary: true
-            MT: true
-            stable: false
     continue-on-error: ${{ !matrix.stable }}
     steps:
       - uses: actions/checkout@v3
