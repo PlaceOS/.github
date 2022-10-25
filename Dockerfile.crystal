@@ -13,6 +13,7 @@ RUN apk add \
     yaml-static \
     git \
     bash \
+    make \
     iputils \
     libelf \
     gmp-dev \
