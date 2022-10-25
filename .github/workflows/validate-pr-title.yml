@@ -13,7 +13,7 @@ jobs:
           fetch-depth: 0
           token: "${{ secrets.GITHUB_TOKEN }}"
       - id: shards
-        run: echo "::set-output name=version::$(shards version)"
+        run: echo "version=$(shards version)" >> $GITHUB_OUTPUT
       - run: |
           cat << EOF > .cz.yaml
           commitizen:
