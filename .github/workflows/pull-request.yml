@@ -26,10 +26,10 @@ jobs:
       - id: shards
         run: |
           if [[ -f "shard.yml" ]]; then
-            echo "::set-output name=version::$(shards version)"
+            echo "version=$(shards version)" >> $GITHUB_OUTPUT
           else
             # Add insane default if no shards file
-            echo "::set-output name=version::1.0.0"
+            echo "version=1.0.0" >> $GITHUB_OUTPUT
           fi
 
   validate:
