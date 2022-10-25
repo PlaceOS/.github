@@ -36,7 +36,8 @@ do
 done
 
 cp ./shard.yml ./shard.yml.bak
-sed -i '/ameba/d' shard.yml
+sed '/ameba/d' shard.yml > shard.yml.new
+mv ./shard.yml.new ./shard.yml
 shards check --ignore-crystal-version -q &> /dev/null || shards install
 mv ./shard.yml.bak ./shard.yml
 
