@@ -34,12 +34,12 @@ jobs:
       name: Extract names
       id: name
       run: |
-        echo "::set-output name=image::${GITHUB_REPOSITORY,,}"
+        echo "image=${GITHUB_REPOSITORY,,}" >> $GITHUB_OUTPUT
         # shellcheck disable=2001
-        echo "::set-output name=tag::$(sed 's/[^[:alnum:]\.\_\-]/-/g' <<<"${GITHUB_REF#refs/heads/}")"
+        echo "tag=$(sed 's/[^[:alnum:]\.\_\-]/-/g' <<<"${GITHUB_REF#refs/heads/}")" >> $GITHUB_OUTPUT
 
         # Remove the organisation prefix
-        echo "::set-output name=build-target::${TARGET#*/}"
+        echo "build-target=${TARGET#*/}" >> $GITHUB_OUTPUT
       env:
         GITHUB_REPOSITORY: ${{ github.repository }}
         GITHUB_REF: ${{ github.ref }}
