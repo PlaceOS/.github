@@ -8,12 +8,17 @@ FROM alpine:$ALPINE_VERSION
 RUN apk add \
   --update \
   --no-cache \
+    gcc \
+    make \
+    autoconf \
+    automake \
+    libtool \
+    patch \
     ca-certificates \
     yaml-dev \
     yaml-static \
     git \
     bash \
-    make \
     iputils \
     libelf \
     gmp-dev \
@@ -32,8 +37,6 @@ RUN apk add \
     tzdata \
     curl
 
-RUN update-ca-certificates
-
 # Add crystal lang
 # can look up packages here: https://pkgs.alpinelinux.org/packages?name=crystal
 RUN apk add \
@@ -43,7 +46,9 @@ RUN apk add \
   --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community \
     crystal \
     shards
-    
+
+RUN update-ca-certificates
+
 # These provide certificate chain validation where communicating with external services over TLS
 ENV SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
 
