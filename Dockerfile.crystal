@@ -22,16 +22,18 @@ RUN apk add \
     iputils \
     libelf \
     gmp-dev \
-    libevent-dev \
-    libevent-static \
     libxml2-dev \
     musl-dev \
     pcre-dev \
     zlib-dev \
     zlib-static \
+    libunwind-dev \
+    libunwind-static \
+    libevent-dev \
+    libevent-static \
+    libssh2-static \
     lz4-dev \
     lz4-static \
-    libssh2-static \
     tzdata \
     curl
   
