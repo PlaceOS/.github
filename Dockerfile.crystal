@@ -26,8 +26,6 @@ RUN apk add \
     libevent-static \
     libxml2-dev \
     musl-dev \
-    openssl-dev \
-    openssl-libs-static \
     pcre-dev \
     zlib-dev \
     zlib-static \
@@ -36,6 +34,10 @@ RUN apk add \
     libssh2-static \
     tzdata \
     curl
+  
+# Already included in the image
+# openssl-dev
+# openssl-libs-static
 
 RUN update-ca-certificates
 
