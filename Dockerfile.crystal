@@ -29,8 +29,6 @@ RUN apk add \
     pcre-dev \
     zlib-dev \
     zlib-static \
-    libunwind-dev \
-    libunwind-static \
     libevent-dev \
     libevent-static \
     libssh2-static \
@@ -48,6 +46,7 @@ RUN apk add \
   --no-cache \
   --repository=http://dl-cdn.alpinelinux.org/alpine/edge/main \
   --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community \
+    libunwind-static \
     crystal \
     shards
 
