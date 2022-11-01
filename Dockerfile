@@ -5,12 +5,12 @@ FROM placeos/crystal:latest as test
 
 WORKDIR /app
 
-# - Add watchexec for running tests on change
+# - Add watchexec for running tests on change (don't use edge repo)
+# --repository=https://dl-cdn.alpinelinux.org/alpine/edge/testing \
 # hadolint ignore=DL3018
 RUN apk add \
   --update \
   --no-cache \
-  --repository=https://dl-cdn.alpinelinux.org/alpine/edge/testing \
     watchexec
 
 COPY test-scripts /app/scripts
