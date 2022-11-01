@@ -1,7 +1,7 @@
 ARG ALPINE_VERSION=latest
 
 # start from a clean image
-FROM 84codes/crystal:1.6.1-alpine
+FROM alpine:latest as build
 
 # Add dependencies commonly required for building crystal applications
 # hadolint ignore=DL3018
@@ -14,6 +14,8 @@ RUN apk add \
     automake \
     libtool \
     patch \
+    openssl-dev \
+    openssl-libs-static \
     ca-certificates \
     yaml-dev \
     yaml-static \
@@ -37,9 +39,17 @@ RUN apk add \
     tzdata \
     curl
   
-# Already included in the image
+# Already included in the 84codes image
 # openssl-dev
 # openssl-libs-static
+
+RUN apk add \
+  --update \
+  --no-cache \
+  --repository=http://dl-cdn.alpinelinux.org/alpine/edge/main \
+  --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community \
+    crystal \
+    shards
 
 RUN update-ca-certificates
 
