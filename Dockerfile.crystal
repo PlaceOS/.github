@@ -1,8 +1,7 @@
-ARG ALPINE_VERSION=latest
+ARG ALPINE_VERSION=3.16
 
 # start from a clean image
-# FROM alpine:latest as build
-FROM 84codes/crystal:1.5.1-alpine as build
+FROM alpine:$ALPINE_VERSION
 
 # Add dependencies commonly required for building crystal applications
 # hadolint ignore=DL3018
@@ -25,6 +24,8 @@ RUN apk add \
     gmp-dev \
     libxml2-dev \
     musl-dev \
+    openssl-dev \
+    openssl-libs-static \
     pcre-dev \
     zlib-dev \
     zlib-static \
@@ -35,6 +36,16 @@ RUN apk add \
     lz4-static \
     tzdata \
     curl
+
+# Add crystal lang
+# can look up packages here: https://pkgs.alpinelinux.org/packages?name=crystal
+RUN apk add \
+  --update \
+  --no-cache \
+  --repository=http://dl-cdn.alpinelinux.org/alpine/edge/main \
+  --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community \
+    crystal \
+    shards
 
 RUN update-ca-certificates
 
