@@ -15,8 +15,6 @@ RUN apk add \
     automake \
     libtool \
     patch \
-    openssl-dev \
-    openssl-libs-static \
     ca-certificates \
     yaml-dev \
     yaml-static \
