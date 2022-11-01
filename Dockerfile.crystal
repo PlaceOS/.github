@@ -2,7 +2,7 @@ ARG ALPINE_VERSION=latest
 
 # start from a clean image
 # FROM alpine:latest as build
-FROM crystallang/crystal:1.6-alpine as build
+FROM crystallang/crystal:1.5-alpine as build
 
 # Add dependencies commonly required for building crystal applications
 # hadolint ignore=DL3018
