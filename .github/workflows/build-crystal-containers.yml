@@ -13,6 +13,15 @@ on:
 
 jobs:
   build:
+    strategy:
+      matrix:
+        crystal:
+          - version: 1.5.1
+            tag: latest
+            alpine: 3.16
+          - version: 1.6.1
+            tag: 1.6.1
+            alpine: latest
     runs-on: ubuntu-latest
     name: Build generic crystal image
     steps:
@@ -37,11 +46,14 @@ jobs:
       uses: docker/build-push-action@v3
       with:
         file: Dockerfile.crystal
+        build-args: |
+          crystal_version=${{ matrix.crystal.version }}
+          alpine_version=${{ matrix.crystal.alpine }}
         platforms: linux/amd64,linux/arm64
         push: true
         cache-from: type=gha,scope=place-crystal
         cache-to: type=gha,scope=place-crystal,mode=max
-        tags: placeos/crystal:latest
+        tags: placeos/crystal:${{ matrix.crystal.tag }}
         labels: |
           org.opencontainers.image.url=https://github.com/PlaceOS/.github
           org.opencontainers.image.vendor=Place Technology Limited
