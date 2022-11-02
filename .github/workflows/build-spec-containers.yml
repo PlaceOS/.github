@@ -18,8 +18,9 @@ jobs:
       matrix:
         crystal:
           - latest
+          - unstable
     runs-on: ubuntu-latest
-    name: Build ${{ matrix.crystal }}
+    name: Build spec runner ${{ matrix.crystal }}
     steps:
     -
       name: Checkout local actions and scripts
@@ -42,7 +43,7 @@ jobs:
       uses: docker/build-push-action@v3
       with:
         build-args: |
-          CRYSTAL_VERSION=${{ matrix.crystal }}
+          crystal_version=${{ matrix.crystal }}
         platforms: linux/amd64,linux/arm64
         push: true
         cache-from: type=gha,scope=runner-${{ matrix.crystal }}

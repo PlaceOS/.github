@@ -16,12 +16,20 @@ jobs:
     strategy:
       matrix:
         crystal:
+          # stable release version
           - version: 1.5.1
-            tag: latest
+            shards: 0.17.1
             alpine: 3.16
+            libgc: 8.2.2
+            llvm: 13
+            tag: latest
+          # version for testing validation:
           - version: 1.6.1
-            tag: 1.6.1
+            shards: 0.17.1
             alpine: latest
+            libgc: 8.2.2
+            llvm: 13
+            tag: unstable
     runs-on: ubuntu-latest
     name: Build generic crystal image
     steps:
@@ -48,7 +56,10 @@ jobs:
         file: Dockerfile.crystal
         build-args: |
           crystal_version=${{ matrix.crystal.version }}
+          shards_version=${{ matrix.crystal.shards }}
           alpine_version=${{ matrix.crystal.alpine }}
+          llvm_version=${{ matrix.crystal.llvm }}
+          gc_version=${{ matrix.crystal.libgc }}
         platforms: linux/amd64,linux/arm64
         push: true
         cache-from: type=gha,scope=place-crystal
