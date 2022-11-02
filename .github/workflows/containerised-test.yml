@@ -32,17 +32,19 @@ jobs:
           BEFORE: ${{ inputs.first_commit }}
 
   test:
-    name: "${{ !matrix.stable && '🚧 ' || '' }}crystal: ${{ matrix.crystal }}, MT: ${{ matrix.MT && '☑' || '☐' }}, canary: ${{ matrix.canary && '☑' || '☐' }}"
+    name: "${{ !matrix.crystal.stable && '🚧 ' || '' }}crystal: ${{ matrix.crystal.tag }}, MT: ${{ matrix.MT && '☑' || '☐' }}, canary: ${{ matrix.canary && '☑' || '☐' }}"
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         crystal:
-          - latest
+          - tag: latest
+            stable: true
+          - tag: unstable
+            stable: false
         MT: [false]
         canary: [false]
-        stable: [true]
-    continue-on-error: ${{ !matrix.stable }}
+    continue-on-error: ${{ !matrix.crystal.stable }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -59,5 +61,5 @@ jobs:
           # Run tests!
           ./test ${{ matrix.MT && '-Dpreview_mt' || '' }} --order random
         env:
-          CRYSTAL_VERSION: ${{ matrix.crystal }}
+          CRYSTAL_VERSION: ${{ matrix.crystal.tag }}
           CR_PAT: ${{ secrets.CR_PAT }}
