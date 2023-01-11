@@ -24,8 +24,8 @@ jobs:
             llvm: 13
             tag: latest
           # version for testing validation:
-          - version: 1.6.2
-            shards: 0.17.1
+          - version: 1.7.0
+            shards: 0.17.2
             alpine: latest
             libgc: 8.2.2
             llvm: 13
