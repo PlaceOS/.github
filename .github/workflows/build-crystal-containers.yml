@@ -28,7 +28,7 @@ jobs:
             shards: 0.17.2
             alpine: latest
             libgc: 8.2.2
-            llvm: 13
+            llvm: 14
             tag: unstable
     runs-on: ubuntu-latest
     name: Build generic crystal image
