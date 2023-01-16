@@ -25,7 +25,7 @@ jobs:
           PULL_REQUEST_TITLE: ${{  github.event.pull_request.title  }}
         run: |
           cz check -m "${PULL_REQUEST_TITLE}"
-      - uses: mshick/add-pr-comment@v1
+      - uses: mshick/add-pr-comment@v2
         if: failure()
         with:
           message: |
