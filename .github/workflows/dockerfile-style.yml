@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Lint ${{ inputs.dockerfile }}
-        uses: hadolint/hadolint-action@v3.0.0
+        uses: hadolint/hadolint-action@v3.1.0
         with:
           # DL3007 ignore latest image, as we control this
           # DL3018 Allow unpinned packages
