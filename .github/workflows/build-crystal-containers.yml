@@ -26,9 +26,11 @@ jobs:
           # version for testing validation:
           - version: 1.7.2
             shards: 0.17.2
-            alpine: latest
+            # alpine: latest
+            alpine: 3.16
             libgc: 8.2.2
-            llvm: 14
+            # llvm: 14
+            llvm: 13
             tag: unstable
     runs-on: ubuntu-latest
     name: Build generic crystal image
