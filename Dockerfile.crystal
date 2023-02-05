@@ -98,5 +98,8 @@ RUN update-ca-certificates
 # These provide certificate chain validation where communicating with external services over TLS
 ENV SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
 
+# Add the spinner helper
+COPY ./spinner /spinner
+
 # set the default cmd, example usage: docker run --rm 84codes/crystal eval 'puts "hello world"'
 ENTRYPOINT ["/usr/bin/crystal"]
