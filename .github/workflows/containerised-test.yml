@@ -26,7 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: alstr/todo-to-issue-action@v4.9
+      - uses: alstr/todo-to-issue-action@v4.10
         with:
           AUTO_ASSIGN: true # Assign issue to whoever wrote the todo
           BEFORE: ${{ inputs.first_commit }}
