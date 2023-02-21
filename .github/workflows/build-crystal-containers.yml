@@ -23,7 +23,7 @@ jobs:
             libgc: 8.2.2
             llvm: 13
             tag: latest
-          # version for testing validation:
+          # release candidate, builds should target compatibility
           - version: 1.7.2
             shards: 0.17.2
             # alpine: latest
@@ -32,6 +32,13 @@ jobs:
             # llvm: 14
             llvm: 13
             tag: unstable
+          # latest version with unknown side effects
+          - version: 1.7.2
+            shards: 0.17.2
+            alpine: 3.17
+            libgc: 8.2.2
+            llvm: 14
+            tag: experimental
     runs-on: ubuntu-latest
     name: Build generic crystal image
     steps:
