@@ -34,6 +34,8 @@ jobs:
   test:
     name: "${{ !matrix.crystal.stable && '🚧 ' || '' }}crystal: ${{ matrix.crystal.tag }}, MT: ${{ matrix.MT && '☑' || '☐' }}, canary: ${{ matrix.canary && '☑' || '☐' }}"
     runs-on: ubuntu-latest
+    env:
+      SPEC_ARGUMENTS: '--order random'
     strategy:
       fail-fast: false
       matrix:
@@ -58,8 +60,8 @@ jobs:
             echo "${CR_PAT}" | docker login ghcr.io -u placeos-robot --password-stdin
           fi
 
-          # Run tests! note: removed '--order random'
-          ./test ${{ matrix.MT && '-Dpreview_mt' || '' }}
+          # Run tests!
+          ./test ${{ matrix.MT && '-Dpreview_mt' || '' }} ${SPEC_ARGUMENTS}
         env:
           CRYSTAL_VERSION: ${{ matrix.crystal.tag }}
           CR_PAT: ${{ secrets.CR_PAT }}
