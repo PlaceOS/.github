@@ -58,8 +58,8 @@ jobs:
             echo "${CR_PAT}" | docker login ghcr.io -u placeos-robot --password-stdin
           fi
 
-          # Run tests!
-          ./test ${{ matrix.MT && '-Dpreview_mt' || '' }} --order random
+          # Run tests! note: removed '--order random'
+          ./test ${{ matrix.MT && '-Dpreview_mt' || '' }}
         env:
           CRYSTAL_VERSION: ${{ matrix.crystal.tag }}
           CR_PAT: ${{ secrets.CR_PAT }}
