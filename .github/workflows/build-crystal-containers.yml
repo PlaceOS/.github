@@ -17,21 +17,21 @@ jobs:
       matrix:
         crystal:
           # stable release version
-          - version: 1.7.3
-            shards: 0.17.2
-            alpine: 3.17
+          - version: 1.5.1
+            shards: 0.17.1
+            alpine: 3.16
             libgc: 8.2.2
-            llvm: 14
+            llvm: 13
             tag: latest
           # release candidate, builds should target compatibility
-          - version: 1.7.3
+          - version: 1.7.2
             shards: 0.17.2
             alpine: 3.17
             libgc: 8.2.2
             llvm: 14
             tag: unstable
           # latest version with unknown side effects
-          - version: 1.7.3
+          - version: 1.7.2
             shards: 0.17.2
             alpine: latest
             libgc: 8.2.2
