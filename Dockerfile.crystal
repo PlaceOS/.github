@@ -6,15 +6,14 @@ ARG llvm_version=14
 RUN apk add --update --no-cache \
     crystal shards \
     llvm${llvm_version}-dev llvm${llvm_version}-static \
-    zlib-static yaml-static libxml2-dev pcre-dev libevent-static \
+    zlib-static yaml-static libxml2-dev pcre-dev pcre2-dev libevent-static \
     libffi-dev git g++ make automake libtool autoconf curl
 # Cross compile for target architecture
 ARG TARGETARCH
 # Build crystal
 WORKDIR /tmp/crystal
 ARG crystal_version=1.5.1
-RUN curl --retry 5 -sL https://github.com/crystal-lang/crystal/archive/refs/tags/${crystal_version}.tar.gz | \
-  tar -zxf- --strip-components=1 && \
+RUN git clone --depth=1 --single-branch --branch=$crystal_version https://github.com/crystal-lang/crystal.git . && \
   gzip -9 man/crystal.1 && \
   mkdir .build && \
   make crystal static=1 release=1 target=$TARGETARCH-alpine-linux-musl PREFIX=/usr FLAGS="--no-debug" | tail -1 > .build/crystal.sh && \
@@ -22,8 +21,7 @@ RUN curl --retry 5 -sL https://github.com/crystal-lang/crystal/archive/refs/tags
 # Build shards
 WORKDIR /tmp/shards
 ARG shards_version=0.17.0
-RUN curl --retry 5 -sL https://github.com/crystal-lang/shards/archive/refs/tags/v${shards_version}.tar.gz | \
-  tar -zxf- --strip-components=1 && \
+RUN git clone --depth=1 --single-branch --branch=v${shards_version} https://github.com/crystal-lang/shards.git . && \
   gzip -9 man/shards.1 man/shard.yml.5 && \
   make bin/shards static=1 release=1 FLAGS="--no-debug --cross-compile --target=$TARGETARCH-alpine-linux-musl" | tail -1 > bin/shards.sh
 
@@ -32,14 +30,13 @@ FROM alpine:$alpine_version AS target-builder
 ARG llvm_version=14
 RUN apk add --update --no-cache \
     llvm${llvm_version}-dev llvm${llvm_version}-static \
-    zlib-static yaml-static libxml2 libxml2-dev pcre-dev libevent-static \
+    zlib-static yaml-static libxml2 libxml2-dev pcre-dev pcre2-dev libevent-static \
     libffi-dev git g++ make automake libtool autoconf curl
 RUN apk add --update --no-cache libxml2-static || true
 # Build libgc
 WORKDIR /tmp/libc
 ARG gc_version=8.2.2
-RUN curl --retry 5 -sL https://github.com/ivmai/bdwgc/archive/refs/tags/v${gc_version}.tar.gz | \
-  tar -zxf- --strip-components=1 && \
+RUN git clone --depth=1 --single-branch --branch=v${gc_version} https://github.com/ivmai/bdwgc.git . && \
   ./autogen.sh && \
   ./configure --disable-debug --disable-shared --enable-large-config --prefix=/usr && \
   make -j$(nproc) CFLAGS="-DNO_GETCONTEXT -pipe -fPIE -O3" && \
@@ -60,7 +57,7 @@ RUN sh -ex bin/shards.sh && strip bin/shards
 FROM alpine:$alpine_version
 
 # add dependencies commonly required for building crystal applications
-RUN apk add --update --no-cache musl-dev gcc pcre-dev libevent-dev libevent-static openssl-dev openssl-libs-static libxml2-dev zlib-dev zlib-static git make yaml-dev
+RUN apk add --update --no-cache musl-dev gcc pcre-dev pcre2-dev libevent-dev libevent-static openssl-dev openssl-libs-static libxml2-dev zlib-dev zlib-static git make yaml-dev libxml2-static
 
 # copy the binaries + stdlib + libgc from the build stage
 COPY --from=builder /tmp/crystal/*.md /usr/share/doc/crystal/
@@ -71,6 +68,7 @@ COPY --from=builder /tmp/crystal/src /usr/share/crystal/src
 COPY --from=target-builder /tmp/crystal/.build/crystal /usr/bin/
 COPY --from=target-builder /tmp/shards/bin/shards /usr/bin/
 COPY --from=target-builder /usr/lib/libgc.a /usr/lib/
+COPY --from=target-builder /usr/lib/libgc.a /usr/lib/crystal/
 
 # Add dependencies commonly required for building PlaceOS applications
 # hadolint ignore=DL3018
