@@ -24,14 +24,14 @@ jobs:
             llvm: 13
             tag: latest
           # release candidate, builds should target compatibility
-          - version: 1.8.1
+          - version: 1.8.2
             shards: 0.17.3
             alpine: 3.17
             libgc: 8.2.2
             llvm: 15
             tag: unstable
           # latest version with unknown side effects
-          - version: 1.8.1
+          - version: 1.8.2
             shards: 0.17.3
             alpine: 3.17
             libgc: 8.2.2
