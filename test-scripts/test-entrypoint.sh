@@ -14,6 +14,7 @@ fi
 
 watch="false"
 coverage="false"
+shell="false"
 PARAMS=""
 
 while [[ $# -gt 0 ]]
@@ -26,6 +27,10 @@ do
     ;;
     -w|--watch)
     watch="true"
+    shift
+    ;;
+    -s|--shell)
+    shell="true"
     shift
     ;;
     *)
@@ -42,6 +47,8 @@ if [[ "$watch" == "true" ]]; then
   CRYSTAL_WORKERS=$(nproc) watchexec -e cr -c -r -w shard.lock -w src -w spec -- scripts/crystal-spec.sh -v $PARAMS
 elif [[ "$coverage" == "true" ]]; then
   CRYSTAL_WORKERS=$(nproc) crkcov --verbose --output --executable-args "$PARAMS"
+elif [[ "$shell" == "true" ]]; then
+  /bin/bash
 else
   CRYSTAL_WORKERS=$(nproc) scripts/crystal-spec.sh -v $PARAMS
 fi
