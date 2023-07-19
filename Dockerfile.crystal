@@ -30,7 +30,7 @@ FROM alpine:$alpine_version AS target-builder
 ARG llvm_version=14
 RUN apk add --update --no-cache \
     llvm${llvm_version}-dev llvm${llvm_version}-static \
-    zlib-static yaml-static libxml2 libxml2-dev pcre-dev pcre2-dev libevent-static \
+    zstd-static zlib-static yaml-static libxml2 libxml2-dev pcre-dev pcre2-dev libevent-static \
     libffi-dev git g++ make automake libtool autoconf curl
 RUN apk add --update --no-cache libxml2-static || true
 # Build libgc
