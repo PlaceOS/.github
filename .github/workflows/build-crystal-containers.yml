@@ -27,14 +27,14 @@ jobs:
           # release candidate, builds should target compatibility
           - version: 1.9.1
             shards: 0.17.3
-            alpine: 3.17
+            alpine: 3.18
             libgc: 8.2.4
             llvm: 16
             tag: unstable
           # latest version with unknown side effects
           - version: 1.9.1
             shards: 0.17.3
-            alpine: 3.17
+            alpine: 3.18
             libgc: 8.2.4
             llvm: 16
             tag: experimental
