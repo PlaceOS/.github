@@ -20,23 +20,23 @@ jobs:
           # stable release version
           - version: 1.14.0
             shards: 0.18.0
-            alpine: 3.19
+            alpine: 3.20
             libgc: 8.2.6
-            llvm: 17
+            llvm: 18
             tag: latest
           # release candidate, builds should target compatibility
           - version: 1.14.0
             shards: 0.18.0
-            alpine: 3.19
+            alpine: 3.20
             libgc: 8.2.6
-            llvm: 17
+            llvm: 18
             tag: unstable
           # latest version with unknown side effects
           - version: 1.14.0
             shards: 0.18.0
-            alpine: 3.19
+            alpine: 3.20
             libgc: 8.2.6
-            llvm: 17
+            llvm: 18
             tag: experimental
     runs-on: ubuntu-latest
     name: Build generic crystal image
