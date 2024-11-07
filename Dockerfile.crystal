@@ -86,7 +86,6 @@ RUN apk add \
     iputils \
     libelf \
     gmp-dev \
-    libssh2-static \
     lz4-dev \
     lz4-static \
     tzdata \
@@ -95,6 +94,7 @@ RUN apk add \
     xz-dev \
     xz-static
 
+RUN apk add --no-cache --repository=http://dl-cdn.alpinelinux.org/alpine/edge/main libssh2-static
 RUN update-ca-certificates
 
 # These provide certificate chain validation where communicating with external services over TLS
