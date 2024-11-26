@@ -25,7 +25,7 @@ jobs:
     name: TODOs → GitHub Issues
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: alstr/todo-to-issue-action@v4.10
         with:
           AUTO_ASSIGN: true # Assign issue to whoever wrote the todo
@@ -48,7 +48,7 @@ jobs:
         canary: [false]
     continue-on-error: ${{ !matrix.crystal.stable }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Run docker-compose test environment

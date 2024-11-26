@@ -20,7 +20,7 @@ jobs:
     outputs:
       version: ${{ steps.shards.outputs.version }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - id: shards
@@ -38,7 +38,7 @@ jobs:
     runs-on: ubuntu-latest
     container: commitizen/commitizen:2
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
