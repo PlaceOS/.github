@@ -18,24 +18,24 @@ jobs:
         # based on https://github.com/84codes/crystal-container-images
         crystal:
           # stable release version
-          - version: 1.14.1
+          - version: 1.16.0
             shards: 0.19.1
-            alpine: '3.20'
-            libgc: 8.2.6
+            alpine: '3.21'
+            libgc: 8.2.8
             llvm: 18
             tag: latest
           # release candidate, builds should target compatibility
-          - version: 1.14.1
+          - version: 1.16.0
             shards: 0.19.1
-            alpine: '3.20'
-            libgc: 8.2.6
+            alpine: '3.21'
+            libgc: 8.2.8
             llvm: 18
             tag: unstable
           # latest version with unknown side effects
-          - version: 1.14.1
+          - version: 1.16.0
             shards: 0.19.1
-            alpine: '3.20'
-            libgc: 8.2.6
+            alpine: '3.21'
+            libgc: 8.2.8
             llvm: 18
             tag: experimental
     runs-on: ubuntu-latest
