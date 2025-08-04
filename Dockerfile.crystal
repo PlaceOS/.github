@@ -67,6 +67,7 @@ RUN apk add \
     iputils \
     libelf \
     gmp-dev \
+    gmp-static \
     lz4-dev \
     lz4-static \
     tzdata \
