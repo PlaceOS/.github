@@ -42,6 +42,8 @@ RUN tar zxf shards.tar.gz && \
 
 # start from a clean image
 FROM alpine:$alpine_version
+# Get package updates since image release
+RUN apk update && apk --no-cache --quiet upgrade
 # add dependencies commonly required for building crystal applications
 RUN apk add --update --no-cache musl-dev gcc pcre2-dev openssl-dev openssl-libs-static libxml2-dev zlib-dev zlib-static git make yaml-dev libxml2-static gmp-dev xz-static yaml-static pcre2-static
 # copy the binaries + stdlib + libgc from the build stage
