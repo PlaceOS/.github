@@ -21,5 +21,6 @@ jobs:
           # DL3059 It's fine to have multiple consecutive runs
           # SC1072 This one seems spurious (related to `for` syntax)
           # SC2016 Ignore single-quotes (expansion not desired)
-          ignore: 'DL3007,DL3018,DL3059,SC1072,SC2016'
+          # SC1008 Ignore shebang check (RUN /binary not a script)
+          ignore: 'DL3007,DL3018,DL3059,SC1072,SC2016,SC1008'
           dockerfile: ${{ inputs.dockerfile }}
