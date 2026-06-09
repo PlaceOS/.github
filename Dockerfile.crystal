@@ -76,7 +76,10 @@ RUN apk add \
     curl \
     xz-libs \
     xz-dev \
-    xz-static
+    xz-static \
+    libunwind-static \
+    libunwind-dev \
+    file
 
 RUN apk add --no-cache --repository=http://dl-cdn.alpinelinux.org/alpine/edge/main libssh2-static
 RUN update-ca-certificates
