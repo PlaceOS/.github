@@ -79,6 +79,8 @@ RUN apk add \
     xz-static \
     libunwind-static \
     libunwind-dev \
+    libevent-dev \
+    libevent-static \
     file
 
 RUN apk add --no-cache --repository=http://dl-cdn.alpinelinux.org/alpine/edge/main libssh2-static
